@@ -7,7 +7,7 @@ import { ActivityIndicator } from 'react-native';
 type HeaderPopupProps = {
   title: string;
   artist: string;
-  artwork: string;
+  artwork?: string;
   isLoading?: boolean;
 };
 
@@ -34,11 +34,13 @@ const HeaderPopup: React.FC<HeaderPopupProps> = ({
   return (
     <View>
       <View style={styles.container}>
-        <Cover
-          source={{
-            uri: artwork,
-          }}
-        />
+        {artwork && (
+          <Cover
+            source={{
+              uri: artwork,
+            }}
+          />
+        )}
         <Text style={styles.h4}>{title}</Text>
         <SubtitleContainer>
           <Text style={styles.h5}>{artist}</Text>

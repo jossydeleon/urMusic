@@ -94,8 +94,8 @@ const SearchMusic: React.FC<SearchMusicProps> = ({ navigation }) => {
    * Close popup
    * */
   const handleClosePopup = () => {
-    setVideoSelected(null);
     setPopup({ ...popup, show: false });
+    setVideoSelected(undefined);
   };
 
   /**
@@ -206,7 +206,7 @@ const SearchMusic: React.FC<SearchMusicProps> = ({ navigation }) => {
           <HeaderPopup
             title={transformTitle(videoSelected?.title || '', 40)}
             artist={transformTitle(videoSelected?.artist || '', 25)}
-            artwork={videoSelected?.avatar || ''}
+            artwork={videoSelected?.avatar}
             isLoading={addingTrack}
           />
         }
