@@ -1,8 +1,7 @@
-import Video from './types/video';
 import getData from './helpers/getData';
 import formatVideo from './helpers/formatVideo';
 import findVal from './helpers/findVal';
-import SearchResult from './types/searchResult';
+import { SearchResult, Video } from './types';
 
 export default async function searchVideo(
   terms: string,

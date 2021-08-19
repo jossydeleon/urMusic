@@ -1,13 +1,14 @@
 import React from 'react';
-import {ListItem, Avatar} from 'react-native-elements';
-import {useSelector} from 'react-redux';
+import { ListItem, Avatar } from 'react-native-elements';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
-import {theme} from '../theme/theme';
+import { theme } from '../theme/theme';
 import IconFontAwesome from './IconFontAwesome';
 import SliderTrack from './SliderTrack';
-import {Screens} from '../navigation';
 import useHelpers from '../hooks/util/useHelpers';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';
+import { IPlayerState } from '../types';
+import { MEDIA_PLAYER_SCREEN } from '../navigation';
 
 const ParentContainer = styled.View``;
 
@@ -33,26 +34,26 @@ const Author = styled.Text`
   font-size: 13px;
 `;
 
-const MiniPlayer = ({navigator}) => {
+interface MiniPlayerProps {
+  navigator: any;
+}
+
+const MiniPlayer: React.FC<MiniPlayerProps> = ({ navigator }) => {
   //useHelper
-  const {transformTitle} = useHelpers();
+  const { transformTitle } = useHelpers();
   //Redux
-  const {currentSongPlaying, isPlaying} = useSelector(state => state.player);
+  const { currentSongPlaying, isPlaying } = useSelector(
+    (state: IPlayerState) => state,
+  );
   //useMediaPlayer
-  const {
-    position,
-    duration,
-    nextTrack,
-    previousTrack,
-    play,
-    pauseTrack,
-  } = useMediaPlayer(true);
+  const { position, duration, nextTrack, previousTrack, play, pauseTrack } =
+    useMediaPlayer(true);
 
   /**
    * Navigate to MediaPlayer screen
    */
   const handleOnPressMiniPlayer = () => {
-    navigator.push(Screens.MediaPlayer);
+    navigator.push(MEDIA_PLAYER_SCREEN);
   };
 
   /**
@@ -87,6 +88,7 @@ const MiniPlayer = ({navigator}) => {
         position={position}
         maxValue={duration}
         incrementBy={1}
+        onChangePosition={x => x}
       />
       <Container>
         <ContentPlayer onPress={handleOnPressMiniPlayer}>
@@ -98,7 +100,7 @@ const MiniPlayer = ({navigator}) => {
             size={50}
           />
           <ListItem.Content>
-            <Title>{transformTitle(currentSongPlaying?.title, 32)}</Title>
+            <Title>{transformTitle(currentSongPlaying?.title || '', 32)}</Title>
             <Author>{'YouTube'}</Author>
           </ListItem.Content>
 

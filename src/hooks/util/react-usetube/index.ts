@@ -7,6 +7,7 @@ import getVideosFromDesc from './getVideosFromDesc';
 import searchChannel from './searchChannel';
 import searchVideo from './searchVideo';
 import getVideoSubtitles from './getVideoSubtitles';
+import useTube from '../useTube';
 
 export {
   getChannelDesc,
@@ -18,4 +19,5 @@ export {
   searchChannel,
   searchVideo,
   getVideoSubtitles,
+  useTube,
 };

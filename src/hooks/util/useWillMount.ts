@@ -3,12 +3,14 @@
  * functional components
  */
 
- import { useRef } from "react";
+import { useRef } from 'react';
 
- export const useWillMount = (func: () => void) => {
-   const willMount = useRef(true);
- 
-   if (willMount.current) func();
- 
-   willMount.current = false;
- };
+export const useWillMount = (func: () => void) => {
+  const willMount = useRef(true);
+
+  if (willMount.current) {
+    func();
+  }
+
+  willMount.current = false;
+};

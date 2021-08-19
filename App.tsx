@@ -3,12 +3,12 @@
  * Main Function to decide behavior of the app
  */
 
-import React, {useEffect} from 'react';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import React, { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 import RootNavigator from './src/navigation/RootNavigator';
-import {theme} from './src/theme/theme';
-import {Provider as ReduxProvider} from 'react-redux';
+import { theme } from './src/theme/theme';
+import { Provider as ReduxProvider } from 'react-redux';
 import store from './src/redux/store';
 import TrackPlayer from 'react-native-track-player';
 
@@ -38,7 +38,7 @@ const App = () => {
           TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
           TrackPlayer.CAPABILITY_STOP,
           TrackPlayer.CAPABILITY_SEEK_TO,
-          TrackPlayer.CAPABILITY_PLAY_FROM_ID
+          TrackPlayer.CAPABILITY_PLAY_FROM_ID,
         ],
         compactCapabilities: [
           TrackPlayer.CAPABILITY_PLAY,
@@ -56,7 +56,10 @@ const App = () => {
     <SafeAreaProvider>
       <ReduxProvider store={store}>
         <SafeAreaView style={[styles.container]}>
-          <StatusBar barStyle={'light-content'} backgroundColor={theme.colors.dark} />
+          <StatusBar
+            barStyle={'light-content'}
+            backgroundColor={theme.colors.dark}
+          />
           <RootNavigator />
         </SafeAreaView>
       </ReduxProvider>

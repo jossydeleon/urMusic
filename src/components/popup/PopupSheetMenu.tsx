@@ -1,36 +1,38 @@
-import React, {createRef, useEffect} from 'react';
+import React, { createRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ActionSheet from 'react-native-actions-sheet';
 import Divider from '../Divider';
 import { FunctionComponent } from 'react';
+import { PopupOptionProps } from './types';
 
 type Props = {
-  show?:boolean;
-  orientation?:string;
-  options?:any[];
-  title?:string;
-  titleStyle?:object;
-  containerStyle?:object;
-  contentStyle?:object;
-  containerListStyle?:object;
-  initialOffsetFromBottom?:number;
-  showCancel?:boolean;
-  cancelLabel?:string;
-  CustomTitleComponent?:any;
-  CustomComponent?:any;
-  onClose:() => void;
-}
+  show?: boolean;
+  orientation?: string;
+  options?: PopupOptionProps[];
+  title?: string;
+  titleStyle?: object;
+  containerStyle?: object;
+  contentStyle?: object;
+  containerListStyle?: object;
+  initialOffsetFromBottom?: number;
+  showCancel?: boolean;
+  cancelLabel?: string;
+  CustomTitleComponent?: JSX.Element;
+  CustomComponent?: JSX.Element;
+  onClose: () => void;
+};
 
 const PopupSheetMenu: FunctionComponent<Props> = ({
   show,
   orientation,
   options,
-  title = "Title",
+  title = 'Title',
   titleStyle,
   CustomTitleComponent,
   containerStyle,
   contentStyle,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   containerListStyle,
   initialOffsetFromBottom = 3.0,
   onClose,
@@ -42,6 +44,7 @@ const PopupSheetMenu: FunctionComponent<Props> = ({
 
   useEffect(() => {
     actionSheetRef.current?.setModalVisible(show);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show]);
 
   /**
@@ -52,7 +55,7 @@ const PopupSheetMenu: FunctionComponent<Props> = ({
       <>
         {options &&
           options.map((option, index) => (
-            <View key={index} style={{alignItems: 'center'}}>
+            <View key={index} style={styles.optionsContainer}>
               <TouchableOpacity onPress={option.onPress}>
                 <Text style={styles.itemName}>{option.name}</Text>
               </TouchableOpacity>
@@ -60,8 +63,8 @@ const PopupSheetMenu: FunctionComponent<Props> = ({
             </View>
           ))}
         {showCancel && (
-          <View style={{display: 'flex', flexDirection: 'column'}}>
-            <TouchableOpacity onPress={onClose} style={{padding: 15}}>
+          <View style={styles.cancelContainer}>
+            <TouchableOpacity onPress={onClose} style={styles.cancelOpacity}>
               <Text style={styles.itemCancel}>{cancelLabel || 'Cancel'}</Text>
             </TouchableOpacity>
           </View>
@@ -83,7 +86,7 @@ const PopupSheetMenu: FunctionComponent<Props> = ({
       <View style={[styles.containerPopup, contentStyle]}>
         <View style={styles.titleContainer}>
           {CustomTitleComponent || (
-            <Text style={{...styles.titleStyle, ...titleStyle}}>{title}</Text>
+            <Text style={{ ...styles.titleStyle, ...titleStyle }}>{title}</Text>
           )}
         </View>
 
@@ -101,8 +104,15 @@ const PopupSheetMenu: FunctionComponent<Props> = ({
 };
 
 const styles = StyleSheet.create({
+  optionsContainer: {
+    alignItems: 'center',
+  },
+  cancelContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
   containerPopup: {
-      //alignItems: 'center',
+    //alignItems: 'center',
   },
   containerHorizontalList: {
     flexDirection: 'row',
@@ -133,6 +143,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     //fontSize: theme.font.subheadingSize,
     color: 'red',
+  },
+  cancelOpacity: {
+    padding: 15,
   },
 });
 

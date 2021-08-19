@@ -1,12 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FlatList, Platform, StyleSheet, Text, TextInput, View, ViewPropTypes } from 'react-native';
+import {
+  FlatList,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  ViewPropTypes,
+} from 'react-native';
 
-export const AutocompleteInput = (props) => {
+export const AutocompleteInput = props => {
   function renderResultList(data, listProps) {
     const { style, ...flatListProps } = listProps;
 
-    return <FlatList data={data} style={[styles.list, style]} {...flatListProps} />;
+    return (
+      <FlatList data={data} style={[styles.list, style]} {...flatListProps} />
+    );
   }
 
   function renderTextInput() {
@@ -35,12 +45,13 @@ export const AutocompleteInput = (props) => {
   onShowResults && onShowResults(showResults);
   return (
     <View style={[styles.container, containerStyle]}>
-      <View style={[styles.inputContainer, inputContainerStyle]}>{renderTextInput(props)}</View>
+      <View style={[styles.inputContainer, inputContainerStyle]}>
+        {renderTextInput(props)}
+      </View>
       {!hideResults && (
         <View
           style={listContainerStyle}
-          onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
-        >
+          onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}>
           {showResults && renderResultList(data, flatListProps)}
         </View>
       )}
@@ -99,7 +110,7 @@ const defaultRenderItem = ({ item }) => <Text>{item}</Text>;
 AutocompleteInput.defaultProps = {
   data: [],
   onStartShouldSetResponderCapture: () => false,
-  renderTextInput: (props) => <TextInput {...props} />,
+  renderTextInput: props => <TextInput {...props} />,
   flatListProps: {
     renderItem: defaultRenderItem,
     keyExtractor: defaultKeyExtractor,

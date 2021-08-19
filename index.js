@@ -19,4 +19,6 @@ MaterialIcons.loadFont();
 Ionicons.loadFont();
 
 AppRegistry.registerComponent(appName, () => App);
-TrackPlayer.registerPlaybackService(() => require('./src/services/service-player'));
+TrackPlayer.registerPlaybackService(() =>
+  require('./src/services/service-player'),
+);

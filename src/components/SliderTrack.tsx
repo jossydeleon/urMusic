@@ -1,6 +1,7 @@
 import React from 'react';
-import {Slider} from 'react-native-elements';
-import {theme} from '../theme/theme';
+import { StyleSheet } from 'react-native';
+import { Slider } from 'react-native-elements';
+import { theme } from '../theme/theme';
 
 interface Props {
   trackTintColor?: string;
@@ -21,10 +22,10 @@ const SliderTrack: React.FC<Props> = ({
 }) => {
   return (
     <Slider
-      style={{flex: 1}}
-      trackStyle={{height: 3, backgroundColor: 'transparent'}}
+      style={styles.container}
+      trackStyle={styles.trackContainer}
       thumbTintColor={thumbTintColor || theme.colors.primary}
-      thumbStyle={{height: 10, width: 10}}
+      thumbStyle={styles.thumbStyle}
       minimumTrackTintColor={trackTintColor || theme.colors.primary}
       step={incrementBy}
       minimumValue={0}
@@ -34,5 +35,19 @@ const SliderTrack: React.FC<Props> = ({
     />
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  trackContainer: {
+    height: 3,
+    backgroundColor: 'transparent',
+  },
+  thumbStyle: {
+    height: 10,
+    width: 10,
+  },
+});
 
 export default SliderTrack;

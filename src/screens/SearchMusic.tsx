@@ -1,20 +1,40 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {theme} from '../theme/theme';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
+import { StyleSheet, View } from 'react-native';
+import { theme } from '../theme/theme';
 import useGoogleAutoComplete from '../hooks/util/useGoogleAutocomplete';
-import {SearchList, SearchHeader} from '../components/searcher';
-import {PopupSheetMenu, HeaderPopup, ContentPopup} from '../components/popup';
+import { SearchList, SearchHeader } from '../components/searcher';
+import { PopupSheetMenu, HeaderPopup, ContentPopup } from '../components/popup';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';
 import useHelpers from '../hooks/util/useHelpers';
 import Clipboard from '@react-native-clipboard/clipboard';
-import useTube from '../hooks/util/useTube';
 import { LinearProgress } from 'react-native-elements';
+import { OptionsProps } from '../components/popup/types';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from '../navigation/types';
+import { Video } from '../hooks/util/react-usetube/types';
+import { useTube } from '../hooks/util/react-usetube';
 
-const SearchMusic = ({navigation}) => {
+export type SearchMusicScreenNavigationProp = StackNavigationProp<
+  MainStackParamList,
+  'SearchMusic'
+>;
+
+type SearchMusicProps = {
+  navigation: SearchMusicScreenNavigationProp;
+};
+
+const SearchMusic: React.FC<SearchMusicProps> = ({ navigation }) => {
   //State to handle typing query
   const [query, setQuery] = useState('');
   //State to handle video selected
-  const [videoSelected, setVideoSelected] = useState();
+  const [videoSelected, setVideoSelected] = useState<
+    Video | undefined | null
+  >();
   //State to handle popup
   const [popup, setPopup] = useState({
     show: false,
@@ -22,17 +42,17 @@ const SearchMusic = ({navigation}) => {
   });
   const [addingTrack, setAddingTrack] = useState(false);
   //Hook Google autocomplete
-  const [getAutoCompleteQueries, resetSuggestions, loading, suggestions] =
+  const { getAutoCompleteQueries, resetSuggestions, loading, suggestions } =
     useGoogleAutoComplete();
-  //Hook Youtube
-  const {videos, fetching, searchVideos, fetchMore} = useTube();
+  //Hook Youtube search
+  const { result, fetching, searchVideos, fetchMore } = useTube();
   //Hook helpers
-  const {transformTitle} = useHelpers();
+  const { transformTitle } = useHelpers();
   //Hook Media Player
-  const {addTrack} = useMediaPlayer();
+  const { addTrack } = useMediaPlayer();
 
   //Options available when video is selected
-  const videoOptions = [
+  const videoOptions: OptionsProps[] = [
     {
       title: 'Add to playlist',
       icon: 'music',
@@ -51,19 +71,23 @@ const SearchMusic = ({navigation}) => {
   ];
 
   useEffect(() => {
-    searchVideos("daddy yankee")
+    searchVideos('daddy yankee');
     return () => {
       searchVideos('');
       getAutoCompleteQueries('');
-    }
-  }, [])
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /**
    * Effect to fetch suggestions everytime user types something
    */
   useEffect(() => {
-    if (!query.length) return;
+    if (!query.length) {
+      return;
+    }
     handleFetchSuggestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   /**
@@ -71,7 +95,7 @@ const SearchMusic = ({navigation}) => {
    * */
   const handleClosePopup = () => {
     setVideoSelected(null);
-    setPopup({show: false});
+    setPopup({ ...popup, show: false });
   };
 
   /**
@@ -81,6 +105,7 @@ const SearchMusic = ({navigation}) => {
     text => {
       setQuery(text);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [query],
   );
 
@@ -90,6 +115,7 @@ const SearchMusic = ({navigation}) => {
    */
   const handleFetchSuggestions = useCallback(async () => {
     await getAutoCompleteQueries(query);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   /**
@@ -98,6 +124,7 @@ const SearchMusic = ({navigation}) => {
   const handleSearch = useCallback(async terms => {
     resetSuggestions();
     await searchVideos(terms);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -105,7 +132,8 @@ const SearchMusic = ({navigation}) => {
    */
   const handleVideoSelected = useCallback(async video => {
     setVideoSelected(video);
-    setPopup({show: true});
+    setPopup({ ...popup, show: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -113,12 +141,14 @@ const SearchMusic = ({navigation}) => {
    **/
   const handleAddToPlaylist = async () => {
     try {
-      setAddingTrack(true)
-      await addTrack(videoSelected);
+      setAddingTrack(true);
+      if (videoSelected) {
+        await addTrack(videoSelected);
+      }
       handleClosePopup();
-    } catch (error) {}
-    finally {
-      setAddingTrack(false)
+    } catch (error) {
+    } finally {
+      setAddingTrack(false);
     }
   };
 
@@ -127,7 +157,7 @@ const SearchMusic = ({navigation}) => {
    * system clipboard
    **/
   const handleCopyLink = () => {
-    Clipboard.setString(videoSelected.url);
+    Clipboard.setString(videoSelected?.url || '');
     handleClosePopup();
   };
 
@@ -143,20 +173,18 @@ const SearchMusic = ({navigation}) => {
     });
   }, [navigation, query]);
 
-  
   return (
     <View style={styles.container}>
-
       <SearchList
-        data={videos}
+        data={result?.videos || []}
         onPress={handleVideoSelected}
         onMore={fetchMore}
         onRefresh={fetchMore}
         headerComponent={
           <SearchHeader
             value={query}
-            loading={loading}
-            showResults={!query.length > 0}
+            isLoading={loading}
+            showResults={query.length > 0}
             placeholder={'Search music'}
             data={suggestions}
             onChangeValue={handleTextEntry}
@@ -170,27 +198,23 @@ const SearchMusic = ({navigation}) => {
         show={popup.show}
         initialOffsetFromBottom={3.0}
         onClose={handleClosePopup}
-        containerStyle={{backgroundColor: 'black'}}
+        containerStyle={styles.popupContainer}
         title={popup?.title}
         showCancel={true}
         cancelLabel={'Close'}
         CustomTitleComponent={
-          videoSelected && (
-            <HeaderPopup
-              title={transformTitle(videoSelected?.title, 40)}
-              artist={transformTitle(videoSelected?.artist, 25)}
-              artwork={videoSelected?.avatar}
-              isLoading={addingTrack}
-            />
-          )
+          <HeaderPopup
+            title={transformTitle(videoSelected?.title || '', 40)}
+            artist={transformTitle(videoSelected?.artist || '', 25)}
+            artwork={videoSelected?.avatar || ''}
+            isLoading={addingTrack}
+          />
         }
         CustomComponent={
-          videoSelected && (
-            <ContentPopup options={videoOptions} onCancel={handleClosePopup} />
-          )
+          <ContentPopup options={videoOptions} onCancel={handleClosePopup} />
         }
       />
-      
+
       {fetching && <LinearProgress color={theme.colors.primary} />}
     </View>
   );
@@ -200,6 +224,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.dark,
+  },
+  popupContainer: {
+    backgroundColor: 'black',
   },
 });
 

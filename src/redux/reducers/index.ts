@@ -1,8 +1,8 @@
-import playerReducer from "./playerReducer";
-import {combineReducers} from 'redux';
+import playerReducer from './playerReducer';
+import { combineReducers } from 'redux';
 
 const allReducers = combineReducers({
-    player: playerReducer,
-})
+  player: playerReducer,
+});
 
 export default allReducers;

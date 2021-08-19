@@ -1,11 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import {View, Text, StyleSheet} from 'react-native';
-import {theme} from '../../theme/theme';
+import { View, Text, StyleSheet } from 'react-native';
+import { theme } from '../../theme/theme';
 import styled from 'styled-components/native';
-import {ActivityIndicator} from 'react-native';
+import { ActivityIndicator } from 'react-native';
 
-type Props = {
+type HeaderPopupProps = {
   title: string;
   artist: string;
   artwork: string;
@@ -26,10 +25,15 @@ const SubtitleContainer = styled.View`
   align-items: center;
 `;
 
-const HeaderPopup: React.FC<Props> = ({isLoading=false, title, artist, artwork}) => {
+const HeaderPopup: React.FC<HeaderPopupProps> = ({
+  isLoading = false,
+  title,
+  artist,
+  artwork,
+}) => {
   return (
     <View>
-      <View style={{alignItems: 'center'}}>
+      <View style={styles.container}>
         <Cover
           source={{
             uri: artwork,
@@ -38,10 +42,7 @@ const HeaderPopup: React.FC<Props> = ({isLoading=false, title, artist, artwork})
         <Text style={styles.h4}>{title}</Text>
         <SubtitleContainer>
           <Text style={styles.h5}>{artist}</Text>
-          {isLoading && <ActivityIndicator
-            color="gray"
-            
-          />}
+          {isLoading && <ActivityIndicator color="gray" />}
         </SubtitleContainer>
       </View>
     </View>
@@ -49,6 +50,9 @@ const HeaderPopup: React.FC<Props> = ({isLoading=false, title, artist, artwork})
 };
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+  },
   h4: {
     fontSize: theme.font.h5,
     color: 'white',
@@ -60,14 +64,8 @@ const styles = StyleSheet.create({
     fontSize: theme.font.h6,
     color: 'gray',
     textAlign: 'center',
-    marginEnd:5
+    marginEnd: 5,
   },
 });
-
-HeaderPopup.propTypes = {
-  title: PropTypes.string.isRequired,
-  artist: PropTypes.string.isRequired,
-  artwork: PropTypes.string.isRequired,
-};
 
 export default HeaderPopup;

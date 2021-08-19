@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text, ActivityIndicator} from 'react-native';
-import {Input} from 'react-native-elements';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { Input } from 'react-native-elements';
 import styled from 'styled-components/native';
-import {PopupSheetMenu, HeaderPopup, ContentPopup} from '../components/popup';
+import { PopupSheetMenu, HeaderPopup, ContentPopup } from '../components/popup';
+import { OptionsProps } from '../components/popup/types';
 import useYtdl from '../hooks/util/useYtdl';
 import { Video } from '../model';
-import {theme} from '../theme/theme';
+import { theme } from '../theme/theme';
 
 const Container = styled.View`
   flex: 1;
@@ -20,18 +21,20 @@ const ContentContainer = styled.View`
   padding-right: 12px;
 `;
 
-const Catcher = () => {
+const Catcher: React.FC = () => {
   //Hook
-  const {getVideoInfo} = useYtdl();
+  const { getVideoInfo } = useYtdl();
   //State
   const [hideCatcher, setHideCatcher] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [text, setText] = useState('https://www.youtube.com/watch?v=fvcxGU8C8pw');
+  const [text, setText] = useState(
+    'https://www.youtube.com/watch?v=fvcxGU8C8pw',
+  );
   const [videoInfo, setVideoInfo] = useState<Video>();
   //State to handle popup
   const [popup, setPopup] = useState(false);
 
-  const options = [
+  const options: OptionsProps[] = [
     {
       title: 'Add to playlist',
       icon: 'music',
@@ -59,7 +62,9 @@ const Catcher = () => {
    * Get information about the video link caught
    * */
   const handleGetVideoInfo = async () => {
-    if (!text.length) return;
+    if (!text.length) {
+      return;
+    }
     try {
       setLoading(true);
       const info = await getVideoInfo(text);
@@ -86,9 +91,11 @@ const Catcher = () => {
             <Input
               onChangeText={setText}
               disabled={loading}
-              inputStyle={{fontSize: theme.font.h6, color: theme.colors.gray}}
-              inputContainerStyle={{borderColor: theme.colors.dark}}
-              leftIcon={loading && <ActivityIndicator color={theme.colors.gray} />}
+              inputStyle={{ fontSize: theme.font.h6, color: theme.colors.gray }}
+              inputContainerStyle={{ borderColor: theme.colors.dark }}
+              leftIcon={
+                loading && <ActivityIndicator color={theme.colors.gray} />
+              }
               rightIcon={{
                 type: 'font-awesome-5',
                 name: 'searchengin',
@@ -105,7 +112,7 @@ const Catcher = () => {
             show={popup}
             initialOffsetFromBottom={3.0}
             onClose={handleClosePopup}
-            containerStyle={{backgroundColor: 'black'}}
+            containerStyle={styles.popupContainer}
             CustomTitleComponent={
               <HeaderPopup
                 title={videoInfo.title}
@@ -113,7 +120,9 @@ const Catcher = () => {
                 artwork={videoInfo.thumbnail}
               />
             }
-            CustomComponent={<ContentPopup options={options} onCancel={handleClosePopup} />}
+            CustomComponent={
+              <ContentPopup options={options} onCancel={handleClosePopup} />
+            }
           />
         )}
       </ContentContainer>
@@ -132,6 +141,9 @@ const styles = StyleSheet.create({
     fontSize: theme.font.h6,
     color: 'gray',
     textAlign: 'center',
+  },
+  popupContainer: {
+    backgroundColor: 'black',
   },
 });
 

@@ -1,20 +1,23 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React, { useLayoutEffect } from 'react';
 import {
   ActivityIndicator,
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 import ArtSlider from '../components/ArtSlider';
 import IconFontAwesome from '../components/IconFontAwesome';
 import SliderTrack from '../components/SliderTrack';
-import {BackgroundedButton} from '../components/styled';
-import {theme} from '../theme/theme';
-import actionsCreator from '../redux/actions';
+import { BackgroundedButton } from '../components/styled';
+import { theme } from '../theme/theme';
 import useHelpers from '../hooks/util/useHelpers';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';
+import { IPlayerState } from '../types';
+import { StyleSheet } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from '../navigation/types';
 
 const Container = styled.View`
   flex: 1;
@@ -72,15 +75,24 @@ const LoadingContainer = styled.View`
   padding-right: 10px;
 `;
 
-const TOTAL = 200
+type MediaPlayerScreenNavigationProp = StackNavigationProp<
+  MainStackParamList,
+  'MediaPlayer'
+>;
 
-const MediaPlayer = ({navigation}) => {
+type MediaPlayerProps = {
+  navigation: MediaPlayerScreenNavigationProp;
+};
+
+const MediaPlayer: React.FC<MediaPlayerProps> = ({ navigation }) => {
   //Hook Helper
-  const {transformTitle} = useHelpers();
+  const { transformTitle } = useHelpers();
 
   //Redux
-  const {currentSongPlaying, isPlaying} = useSelector(state => state.player);
-  const {} = actionsCreator.playerActions;
+  const { currentSongPlaying, isPlaying } = useSelector(
+    (state: IPlayerState) => state,
+  );
+  //const { } = actionsCreator.playerActions;
 
   //useMediaPlayer
   const {
@@ -93,13 +105,8 @@ const MediaPlayer = ({navigation}) => {
     pauseTrack,
     seekTo,
     setVolume,
-    error
   } = useMediaPlayer(true);
 
-  
-  
-  
-  
   /*
   useEffect(() => {
     let timer = setTimeout(() => setValue(value + 1), 1000);
@@ -111,22 +118,14 @@ const MediaPlayer = ({navigation}) => {
   }, [value]);
 */
 
-
-
-
-
-
-
-
-
   /**
    * Layout effect to add a custom header.
    * This effect run before mounting component
    */
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: 'Now Playing',
-      headerHeight: 60,
+      headerTitle: () => 'Now Playing',
+      //headerHeight: 60,
       headerBackImage: props => (
         <BackgroundedButton name="chevron-left" {...props} size={20} />
       ),
@@ -158,38 +157,34 @@ const MediaPlayer = ({navigation}) => {
     await previousTrack();
   };
 
-
   /**
-   * 
+   *
    **/
-  const handleSeekTo = async (position) => {
-    console.log("Seek to: " + position)
-    await seekTo(position)
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleSeekTo = async (value: number) => {
+    await seekTo(value);
+  };
 
   /**
    * Handle phone volume
    **/
-  const handleVolume = async volume => {
-    await setVolume(volume);
+  const handleVolume = async (value: number) => {
+    await setVolume(value);
   };
 
-
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <Container>
         <LoadingContainer>
           <ActivityIndicator animating={false} />
         </LoadingContainer>
         <ArtSlider
-          albumArt={currentSongPlaying?.artwork}
+          albumArt={currentSongPlaying?.artwork || ''}
           currentSeconds={position}
           durationInSeconds={duration}
-          hideThumb={true}
-          onSeekTo={handleSeekTo}
         />
-        <Title>{transformTitle(currentSongPlaying?.title, 35)}</Title>
+        <Title>{transformTitle(currentSongPlaying?.title || '', 35)}</Title>
         <Author>YouTube</Author>
       </Container>
       <ContainerPanelControl>
@@ -201,9 +196,7 @@ const MediaPlayer = ({navigation}) => {
           <IconFontAwesome name="random" />
           <IconFontAwesome name="backward" onPress={handleSkipTrack} />
           <TouchableOpacity onPress={handlePlayPauseTrack}>
-            <PlayPauseButton
-              name={isPlaying ? 'pause' : 'play'}
-            />
+            <PlayPauseButton name={isPlaying ? 'pause' : 'play'} />
           </TouchableOpacity>
           <IconFontAwesome name="forward" onPress={handleNextTrack} />
           <IconFontAwesome name="reply-all" />
@@ -211,7 +204,7 @@ const MediaPlayer = ({navigation}) => {
         <AudioControl>
           <IconFontAwesome
             name="volume-off"
-            style={{marginRight: 12}}
+            style={styles.iconPadding}
             color={theme.colors.primary}
           />
           <SliderTrack
@@ -221,7 +214,7 @@ const MediaPlayer = ({navigation}) => {
           />
           <IconFontAwesome
             name="volume-up"
-            style={{marginLeft: 12}}
+            style={styles.iconPadding}
             color={theme.colors.primary}
           />
         </AudioControl>
@@ -229,5 +222,14 @@ const MediaPlayer = ({navigation}) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  iconPadding: {
+    marginLeft: 12,
+  },
+});
 
 export default MediaPlayer;

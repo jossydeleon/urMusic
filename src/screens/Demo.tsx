@@ -1,12 +1,11 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import {theme} from '../theme/theme';
+import { StyleSheet, View, Text } from 'react-native';
+import { theme } from '../theme/theme';
 
-const Demo = ({}) => {
-  
+const Demo: React.FC = () => {
   return (
     <View style={styles.container}>
-      
+      <Text>Hello Demo!</Text>
     </View>
   );
 };

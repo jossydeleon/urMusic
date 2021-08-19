@@ -1,13 +1,13 @@
-import React, {useCallback, ReactElement} from 'react';
-import {FlatList, RefreshControl} from 'react-native';
-import {SearchVideoResult} from '../../model';
+import React, { useCallback, ReactElement } from 'react';
+import { FlatList, RefreshControl } from 'react-native';
+import { Video } from '../../hooks/util/react-usetube/types';
 import SearchItem from './SearchItem';
 
 interface Props {
-  data: SearchVideoResult[];
+  data: Video[];
   onRefresh: () => void;
   onMore: () => void;
-  onPress: (video: SearchVideoResult) => void;
+  onPress: (video: Video) => void;
   headerComponent: ReactElement;
 }
 
@@ -25,7 +25,8 @@ const SearchList: React.FC<Props> = ({
   /**
    * */
   const renderItem = useCallback(
-    ({item}) => <SearchItem video={item} onPress={onPress} />,
+    ({ item }) => <SearchItem video={item} onPress={onPress} />,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 

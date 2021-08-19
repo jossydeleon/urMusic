@@ -1,4 +1,6 @@
-class Video {
+import { IVideo } from '../types';
+
+class Video implements IVideo {
   videoId: string;
   title: string;
   artist: string;
@@ -6,7 +8,13 @@ class Video {
   thumbnail: string;
   url: string;
 
-  constructor(videoId: string, title: string, artist: string, duration: number, thumbnails: any[]) {
+  constructor(
+    videoId: string,
+    title: string,
+    artist: string,
+    duration: number,
+    thumbnails: any[],
+  ) {
     this.videoId = videoId;
     this.title = title;
     this.duration = duration;
@@ -18,11 +26,12 @@ class Video {
     if (thumbnails.length) {
       this.thumbnail = thumbnails[thumbnails.length - 1].url;
     } else {
-      this.thumbnail = 'https://www.brav.com/public/images/image-default.png?scale=canvas&width=250&quality=80';
+      this.thumbnail =
+        'https://www.brav.com/public/images/image-default.png?scale=canvas&width=250&quality=80';
     }
 
     //Set url video
-    this.url = "https://youtube.com/watch?v=" + videoId;
+    this.url = 'https://youtube.com/watch?v=' + videoId;
   }
 }
 

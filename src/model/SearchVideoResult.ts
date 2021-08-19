@@ -1,4 +1,4 @@
-export default interface SearchVideoResult {
+export interface SearchVideoResult {
   id: string;
   original_title: string;
   title: string;

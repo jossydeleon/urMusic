@@ -1,19 +1,30 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet} from 'react-native';
-import {ListItem, Button} from 'react-native-elements';
-import {useSelector} from 'react-redux';
-import useMediaPlayer from '../../hooks/player/useMediaPlayer';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { ListItem, Button } from 'react-native-elements';
+import { useSelector } from 'react-redux';
 import useHelpers from '../../hooks/util/useHelpers';
-import {theme} from '../../theme/theme';
-import {BackgroundedButton} from '../styled';
+import { theme } from '../../theme/theme';
+import { BackgroundedButton } from '../styled';
+import { IPlayerState, ISong } from '../../types';
 
-const LibraryItem = ({song, onPlay, onDelete}) => {
+interface LibraryItemProps {
+  song: ISong;
+  onPlay: (song: ISong) => void;
+  onDelete: (song: ISong) => void;
+}
+
+const LibraryItem: React.FC<LibraryItemProps> = ({
+  song,
+  onPlay,
+  onDelete,
+}) => {
   //Redux
-  const {currentSongPlaying, isPlaying} = useSelector(state => state.player);
+  const { currentSongPlaying, isPlaying } = useSelector(
+    (state: IPlayerState) => state,
+  );
   //Hook helpers
-  const {transformTitle} = useHelpers();
-  //Hook Media
-  const {isCurrentTrackPlaying} = useMediaPlayer();
+  const { transformTitle } = useHelpers();
   //State to update play/pause button
   const [isThisSongPlaying, setIsThisSongPlaying] = useState(false);
 
@@ -28,7 +39,7 @@ const LibraryItem = ({song, onPlay, onDelete}) => {
    * Functions to check if this song is the current track.
    * */
   const isTrackPlaying = async () => {
-    const result = currentSongPlaying.id === song.id;
+    const result = currentSongPlaying?.id === song.id;
     if (result) {
       setIsThisSongPlaying(true);
     } else {
@@ -39,7 +50,7 @@ const LibraryItem = ({song, onPlay, onDelete}) => {
   //Button delete
   const ButtonDelete = () => (
     <Button
-      icon={{name: 'delete', color: 'white'}}
+      icon={{ name: 'delete', color: 'white' }}
       buttonStyle={styles.buttonDelete}
       onPress={() => onDelete(song)}
     />
@@ -48,7 +59,7 @@ const LibraryItem = ({song, onPlay, onDelete}) => {
   return (
     <ListItem.Swipeable
       containerStyle={styles.containerItem}
-      onPress={onPlay}
+      onPress={() => onPlay(song)}
       leftContent={<ButtonDelete />}>
       <ListItem.Content>
         <ListItem.Title style={styles.title}>

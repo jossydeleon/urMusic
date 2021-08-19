@@ -25,11 +25,9 @@ interface Props {
   durationStyle: StyleProp<TextStyle>;
 }
 
-const TrackAvatar: React.FC<Props> = ({artwork, duration, durationStyle}) => {
+const TrackAvatar: React.FC<Props> = ({ artwork, duration, durationStyle }) => {
   return (
-    <ImageBackground
-      source={{uri: artwork}}
-      style={{width: 80, height: 80, aspectRatio: 1}}>
+    <ImageBackground source={{ uri: artwork }} style={styles.imageContainer}>
       <ContainerText>
         <Text style={[styles.duration, durationStyle]}>{duration}</Text>
       </ContainerText>
@@ -46,6 +44,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 5,
+  },
+  imageContainer: {
+    width: 80,
+    height: 80,
+    aspectRatio: 1,
   },
 });
 

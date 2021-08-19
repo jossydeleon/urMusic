@@ -4,26 +4,33 @@
  */
 
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
-import {theme} from '../theme/theme.js';
-import BottomStackNavigation from './BottomStackNavigation.js';
+import { createStackNavigator } from '@react-navigation/stack';
+import { theme } from '../theme/theme.js';
 import MediaPlayer from '../screens/MediaPlayer';
 import Settings from '../screens/Settings';
-import {Screens} from '.';
 import SearchMusic from '../screens/SearchMusic';
-import {BackgroundedButton} from '../components/styled';
-import Demo from '../screens/Demo.js';
+import { BackgroundedButton } from '../components/styled';
+import Demo from '../screens/Demo';
+import {
+  DEMO_SCREEN,
+  HOME_BOTTOM_NAVIGATOR,
+  MEDIA_PLAYER_SCREEN,
+  SEARCH_MUSIC_SCREEN,
+  SETTINGS_SCREEN,
+} from './routes';
+import { MainStackParamList } from './types';
+import BottomStackNavigation from './BottomStackNavigation';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<MainStackParamList>();
 
-export default function MainStackNavigation() {
+const MainStackNavigation: React.FC = () => {
   return (
     <Stack.Navigator
+      initialRouteName={HOME_BOTTOM_NAVIGATOR}
       mode="modal"
       headerMode="screen"
-      initialRouteName={Screens.Home}
       screenOptions={{
-        //gestureEnabled: true,
+        gestureEnabled: true,
         headerBackTitleVisible: false,
         headerStyle: {
           backgroundColor: theme.colors.dark,
@@ -40,18 +47,21 @@ export default function MainStackNavigation() {
           <BackgroundedButton name="chevron-left" size={20} {...props} />
         ),
       }}>
-      <Stack.Screen name={Screens.Home} component={BottomStackNavigation} />
+      <Stack.Screen
+        name={HOME_BOTTOM_NAVIGATOR}
+        component={BottomStackNavigation}
+      />
 
       <Stack.Screen
-        name={Screens.MediaPlayer}
+        name={MEDIA_PLAYER_SCREEN}
         component={MediaPlayer}
-        options={({route}) => ({
+        options={({ route }) => ({
           title: route.params?.name || 'Now Playing',
         })}
       />
 
       <Stack.Screen
-        name={Screens.SearchMusic}
+        name={SEARCH_MUSIC_SCREEN}
         component={SearchMusic}
         options={{
           title: 'Search',
@@ -59,7 +69,7 @@ export default function MainStackNavigation() {
       />
 
       <Stack.Screen
-        name={Screens.Settings}
+        name={SETTINGS_SCREEN}
         component={Settings}
         options={{
           title: 'Settings',
@@ -67,7 +77,7 @@ export default function MainStackNavigation() {
       />
 
       <Stack.Screen
-        name={Screens.Demo}
+        name={DEMO_SCREEN}
         component={Demo}
         options={{
           title: 'Demo',
@@ -75,4 +85,6 @@ export default function MainStackNavigation() {
       />
     </Stack.Navigator>
   );
-}
+};
+
+export default MainStackNavigation;

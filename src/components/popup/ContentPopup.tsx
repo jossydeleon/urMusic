@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import IconFontAwesome from '../IconFontAwesome';
 import styled from 'styled-components/native';
+import { OptionsProps } from './types';
 
-type Props = {
-  options:any
-  onCancel:() => void
+interface PopupProps {
+  options: OptionsProps[];
+  onCancel: () => void;
 }
 
 const CancelContainer = styled.View`
@@ -16,14 +17,14 @@ const CancelContainer = styled.View`
   align-items: center;
 `;
 
-const ContentPopup: React.FC<Props> = ({options, onCancel}) => {
+const ContentPopup: React.FC<PopupProps> = ({ options, onCancel }) => {
   return (
-    <View style={{paddingBottom: 10}}>
-      {options.map((option:any, index:number) => (
+    <View style={styles.container}>
+      {options.map((option: OptionsProps, index: number) => (
         <View key={index} style={styles.listContainer}>
           <TouchableOpacity
             style={styles.listItemContainer}
-            onPress={option.func}>
+            onPress={() => option.func}>
             <IconFontAwesome
               name={option.icon}
               color="gray"
@@ -35,7 +36,7 @@ const ContentPopup: React.FC<Props> = ({options, onCancel}) => {
         </View>
       ))}
       <CancelContainer>
-        <TouchableOpacity onPress={onCancel} style={{padding: 15}}>
+        <TouchableOpacity onPress={onCancel} style={styles.containerOpacity}>
           <Text style={styles.itemCancel}>{'Close'}</Text>
         </TouchableOpacity>
       </CancelContainer>
@@ -44,6 +45,9 @@ const ContentPopup: React.FC<Props> = ({options, onCancel}) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 10,
+  },
   listContainer: {
     alignItems: 'flex-start',
     paddingHorizontal: 10,
@@ -64,6 +68,9 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     fontWeight: 'bold',
     color: 'white',
+  },
+  containerOpacity: {
+    padding: 15,
   },
 });
 

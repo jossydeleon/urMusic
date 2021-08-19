@@ -1,9 +1,9 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
-import {ListItem} from 'react-native-elements';
+import { StyleSheet } from 'react-native';
+import { ListItem } from 'react-native-elements';
 import useHelpers from '../../hooks/util/useHelpers';
-import {SearchVideoResult} from '../../model';
-import {theme} from '../../theme/theme';
+import { SearchVideoResult } from '../../model';
+import { theme } from '../../theme/theme';
 import TrackAvatar from '../TrackAvatar';
 
 interface Props {
@@ -11,9 +11,9 @@ interface Props {
   onPress: (video: SearchVideoResult) => void;
 }
 
-const SearchItem: React.FC<Props> = ({video, onPress}) => {
+const SearchItem: React.FC<Props> = ({ video, onPress }) => {
   //Hook helpers
-  const {transformTitle, secondsToTimerFormat, formatDateToTimeAgo} =
+  const { transformTitle, secondsToTimerFormat, formatDateToTimeAgo } =
     useHelpers();
 
   return (

@@ -1,6 +1,6 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import actionsCreators from '../../redux/actions';
-import {useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import useYtdl from '../util/useYtdl';
 import TrackPlayer, {
   TrackPlayerEvents,
@@ -9,7 +9,7 @@ import TrackPlayer, {
   useTrackPlayerEvents,
   useWhenPlaybackStateChanges,
 } from 'react-native-track-player';
-import {SearchVideoResult, Song} from '../../model';
+import { SearchVideoResult, Song } from '../../model';
 
 const EventTypes = [
   TrackPlayerEvents.PLAYBACK_STATE,
@@ -18,7 +18,7 @@ const EventTypes = [
 
 const useMediaPlayer = (isMediaPlayerComponent = false) => {
   //Hook Youtube catcher link
-  const {getHighestAudioLink} = useYtdl();
+  const { getHighestAudioLink } = useYtdl();
 
   //Redux
   const dispatch = useDispatch();
@@ -45,8 +45,6 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
 
   const [playbackChange, setPlaybackChange] = useState(0);
 
-  // invert binary tree
-
   /**
    *
    **/
@@ -59,6 +57,12 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     }
   });
 
+  useEffect(() => {
+    if (error) {
+      console.log('Error somewhere at useMediaPlayer: ' + error);
+    }
+  }, [error]);
+
   useWhenPlaybackStateChanges(() => {
     setPlaybackChange(Date.now());
   });
@@ -68,6 +72,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    **/
   useEffect(() => {
     getVolume();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -79,6 +84,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
       playbackState === TrackPlayer.STATE_BUFFERING;
     setIsPlaying(result);
     dispatch(setIsPlayingAnySong(result));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playbackState]);
 
   /**
@@ -86,30 +92,37 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * */
   useEffect(() => {
     getCurrentTrack();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrack]);
 
   /**
    * Effect to set current duration in seconds of a track
    * */
   useEffect(() => {
-    if (!isMediaPlayerComponent) return;
+    if (!isMediaPlayerComponent) {
+      return;
+    }
     setDuration(progress.duration);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress.duration]);
 
   /**
    * Effect to set current position in seconds of a track
    * */
   useEffect(() => {
-    if (!isMediaPlayerComponent) return;
+    if (!isMediaPlayerComponent) {
+      return;
+    }
     setPosition(progress.position);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress.position]);
 
   /**
    * Return if track sent by id is playing.
    * */
   const isCurrentTrackPlaying = async (id: string): Promise<boolean> => {
-    const currentTrack = await TrackPlayer.getCurrentTrack();
-    return currentTrack === id && isPlaying;
+    const current = await TrackPlayer.getCurrentTrack();
+    return current === id && isPlaying;
   };
   /**
    * Get current track active in the queue
@@ -119,12 +132,22 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     setError(null);
     try {
       const id = await TrackPlayer.getCurrentTrack();
-      if (!id) return undefined;
+      if (!id) {
+        return undefined;
+      }
       const current = await TrackPlayer.getTrack(id);
-      dispatch(setCurrentSongPlaying(current));
+      const song = new Song(
+        current.id,
+        current.title,
+        current.artist,
+        current.artwork,
+        current.duration || 0,
+        current.url,
+      );
+      dispatch(setCurrentSongPlaying(song));
       return current;
-    } catch (error) {
-      setError(error);
+    } catch (err) {
+      setError(err);
     }
   };
 
@@ -137,8 +160,8 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
       const result = await TrackPlayer.getVolume();
       setVolumePosition(result);
       dispatch(setVolumeState(result));
-    } catch (error) {
-      setError(error);
+    } catch (err) {
+      setError(err);
     }
   };
 
@@ -149,8 +172,8 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     setError(null);
     try {
       await TrackPlayer.play();
-    } catch (error) {
-      setError(error);
+    } catch (err) {
+      setError(err);
     }
   };
 
@@ -161,9 +184,9 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     setError(null);
     try {
       await TrackPlayer.skip(id);
-    } catch (error) {
-      setError(error);
-      console.error('PlayTrackById: ' + error);
+    } catch (err) {
+      setError(err);
+      console.error('PlayTrackById: ' + err);
     }
   };
 
@@ -174,8 +197,8 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     setError(null);
     try {
       await TrackPlayer.pause();
-    } catch (error) {
-      setError(error);
+    } catch (err) {
+      setError(err);
     }
   };
 
@@ -186,43 +209,43 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     setError(null);
     try {
       await TrackPlayer.skipToNext();
-    } catch (error) {
-      setError(error);
+    } catch (err) {
+      setError(err);
     }
   };
 
   /**
    * Skip to previous track
    **/
-  const previousTrack = async (): Promise<void> => {
+  const previousTrack = async () => {
     setError(null);
     try {
       await TrackPlayer.skipToPrevious();
-    } catch (error) {
-      setError(error);
+    } catch (err) {
+      setError(err);
     }
   };
 
-  const seekTo = async (position: number): Promise<void> => {
+  const seekTo = async (value: number) => {
     setError(null);
     try {
-      await TrackPlayer.seekTo(position);
-    } catch (error) {
-      setError(error);
+      await TrackPlayer.seekTo(value);
+    } catch (err) {
+      setError(err);
     }
   };
 
   /**
    * Set volume
-   * @param volume
+   * @param value
    **/
-  const setVolume = async (volume: number): Promise<void> => {
+  const setVolume = async (value: number) => {
     setError(null);
     try {
-      await TrackPlayer.setVolume(volume);
-      dispatch(setVolumeState(volume));
-    } catch (error) {
-      setError(error);
+      await TrackPlayer.setVolume(value);
+      dispatch(setVolumeState(value));
+    } catch (err) {
+      setError(err);
     }
   };
 
@@ -232,7 +255,6 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * 2. Add video to track queue
    * */
   const addTrack = async (video: SearchVideoResult): Promise<void> => {
-    
     setError(null);
     try {
       //Request playable url
@@ -240,13 +262,12 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
         quality: 'highestaudio',
       });
 
-      const {id, title, artist, duration, avatar} = video;
       const song = new Song(
-        id,
-        title,
-        artist,
-        avatar,
-        duration,
+        video.id,
+        video.title,
+        video.artist,
+        video.avatar,
+        video.duration,
         playableLink,
       );
 
@@ -254,9 +275,9 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
       await TrackPlayer.play();
 
       dispatch(addSongToLibrary(song));
-    } catch (error) {
-      console.error('useMediaPlayer-addTrack => ' + error);
-      setError(error);
+    } catch (err) {
+      console.error('useMediaPlayer-addTrack => ' + err);
+      setError(err);
     }
   };
 
@@ -268,10 +289,10 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     setError(null);
     try {
       await TrackPlayer.remove(song.id);
-      dispatch(deleteSongFromLibrary(song.id));
-    } catch (error) {
-      console.error('useMediaPlayer-removeTrack => ' + error);
-      setError(error);
+      dispatch(deleteSongFromLibrary(song));
+    } catch (err) {
+      console.error('useMediaPlayer-removeTrack => ' + err);
+      setError(err);
     }
   };
 
