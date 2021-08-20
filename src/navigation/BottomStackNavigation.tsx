@@ -62,14 +62,10 @@ const BottomStackNavigation: React.FC<BottomHomeProps> = ({
     const routeName =
       getFocusedRouteNameFromRoute(newRoute) ?? HOME_WELCOME_SCREEN;
     switch (routeName) {
-      case HOME_WELCOME_SCREEN:
-        return <HeaderLogo />;
-      case SEARCH_MUSIC_SCREEN:
-        return 'Search';
-      case CATCHER_SCREEN:
-        return <HeaderLogo />;
       case LIBRARY_SCREEN:
         return 'My Library';
+      default:
+        return <HeaderLogo />;
     }
   };
 
@@ -121,7 +117,8 @@ const BottomStackNavigation: React.FC<BottomHomeProps> = ({
           : theme.colors.dark,
       },
 
-      headerTitle: () => getHeaderTitle(route),
+      //@ts-ignore
+      headerTitle: getHeaderTitle(route),
       headerLeft: () => {
         if (!isHomeScreen(route)) {
           return null;
