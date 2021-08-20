@@ -1,5 +1,5 @@
 import ytdl from 'react-native-ytdl';
-import { Video } from '../../model';
+import { YoutubeVideo } from '../../model';
 
 export const getHighestAudioLinkClass = async (
   url: string,
@@ -54,7 +54,7 @@ const useYtdl = () => {
       const { videoId, title, lengthSeconds, thumbnails, media } =
         result.videoDetails;
 
-      return new Video(
+      return new YoutubeVideo(
         videoId,
         title,
         media?.artist,

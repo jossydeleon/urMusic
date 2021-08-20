@@ -1,4 +1,4 @@
-import AutocompleteInput from "./AutocompleteInput";
-import { AutocompleteItem } from "./AutocompleteItem";
+import AutocompleteInput from './AutocompleteInput';
+import { AutocompleteItem } from './AutocompleteItem';
 
-export { AutocompleteInput, AutocompleteItem }
+export { AutocompleteInput, AutocompleteItem };

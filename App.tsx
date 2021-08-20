@@ -10,7 +10,7 @@ import RootNavigator from './src/navigation/RootNavigator';
 import { theme } from './src/theme/theme';
 import { Provider as ReduxProvider } from 'react-redux';
 import store from './src/redux/store';
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, { Capability } from 'react-native-track-player';
 
 const App = () => {
   /**
@@ -26,25 +26,24 @@ const App = () => {
    */
   const setUpTrackPlayer = async () => {
     try {
-      await TrackPlayer.setupPlayer();
+      await TrackPlayer.setupPlayer({});
       await TrackPlayer.updateOptions({
-        stopWithApp: true, //TODO True for Android
+        stopWithApp: true,
         capabilities: [
-          TrackPlayer.CAPABILITY_PLAY,
-          TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_PLAY,
-          TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-          TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
-          TrackPlayer.CAPABILITY_STOP,
-          TrackPlayer.CAPABILITY_SEEK_TO,
-          TrackPlayer.CAPABILITY_PLAY_FROM_ID,
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+          Capability.Stop,
+          Capability.SeekTo,
+          Capability.PlayFromId,
+          Capability.PlayFromSearch,
         ],
         compactCapabilities: [
-          TrackPlayer.CAPABILITY_PLAY,
-          TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-          TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
         ],
       });
     } catch (error) {

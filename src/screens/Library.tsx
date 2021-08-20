@@ -57,7 +57,7 @@ const Library: React.FC<LibraryProps> = ({ navigation }) => {
     if (!song) {
       return;
     }
-    await removeTrack(song);
+    await removeTrack(0, song);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

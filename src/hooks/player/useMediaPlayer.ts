@@ -3,17 +3,21 @@ import actionsCreators from '../../redux/actions';
 import { useDispatch } from 'react-redux';
 import useYtdl from '../util/useYtdl';
 import TrackPlayer, {
-  TrackPlayerEvents,
-  useTrackPlayerProgress,
+  Event,
+  State,
+  Track,
   usePlaybackState,
+  useProgress,
   useTrackPlayerEvents,
-  useWhenPlaybackStateChanges,
 } from 'react-native-track-player';
-import { SearchVideoResult, Song } from '../../model';
+import { Song } from '../../model';
+import { Video } from '../util/react-usetube/types';
 
 const EventTypes = [
-  TrackPlayerEvents.PLAYBACK_STATE,
-  TrackPlayerEvents.PLAYBACK_TRACK_CHANGED,
+  Event.PlaybackState,
+  Event.PlaybackTrackChanged,
+  Event.RemotePlay,
+  Event.RemotePause,
 ];
 
 const useMediaPlayer = (isMediaPlayerComponent = false) => {
@@ -31,11 +35,11 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   } = actionsCreators.playerActions;
 
   //TrackPlayer Hooks
-  const progress = useTrackPlayerProgress();
+  const progress = useProgress();
   const playbackState = usePlaybackState();
 
   //States
-  const [currentTrack, setCurrentTrack] = useState<TrackPlayer.Track>();
+  const [currentTrack, setCurrentTrack] = useState<Track>();
   const [position, setPosition] = useState(0);
   const [error, setError] = useState(null);
 
@@ -43,16 +47,27 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolumePosition] = useState(0);
 
-  const [playbackChange, setPlaybackChange] = useState(0);
-
   /**
    *
    **/
   useTrackPlayerEvents(EventTypes, async event => {
     switch (event.type) {
-      case TrackPlayerEvents.PLAYBACK_TRACK_CHANGED:
-        const track = await TrackPlayer.getTrack(event.nextTrack);
-        setCurrentTrack(track || undefined);
+      case Event.PlaybackTrackChanged:
+        if (event.nextTrack !== undefined) {
+          setCurrentTrack(undefined);
+        } else {
+          const track = await TrackPlayer.getTrack(event.nextTrack);
+          setCurrentTrack(track);
+        }
+        break;
+      case Event.RemotePause:
+        TrackPlayer.pause();
+        break;
+      case Event.RemotePlay:
+        TrackPlayer.play();
+        break;
+      case Event.PlaybackQueueEnded:
+        console.log('Playback ended');
         break;
     }
   });
@@ -62,10 +77,6 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
       console.log('Error somewhere at useMediaPlayer: ' + error);
     }
   }, [error]);
-
-  useWhenPlaybackStateChanges(() => {
-    setPlaybackChange(Date.now());
-  });
 
   /**
    * Effect to run initial functions
@@ -80,8 +91,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    **/
   useEffect(() => {
     const result =
-      playbackState === TrackPlayer.STATE_PLAYING ||
-      playbackState === TrackPlayer.STATE_BUFFERING;
+      playbackState === State.Playing || playbackState === State.Buffering;
     setIsPlaying(result);
     dispatch(setIsPlayingAnySong(result));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,7 +130,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   /**
    * Return if track sent by id is playing.
    * */
-  const isCurrentTrackPlaying = async (id: string): Promise<boolean> => {
+  const isCurrentTrackPlaying = async (id: number): Promise<boolean> => {
     const current = await TrackPlayer.getCurrentTrack();
     return current === id && isPlaying;
   };
@@ -128,21 +138,21 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * Get current track active in the queue
    * and dispatch it to the global store
    **/
-  const getCurrentTrack = async (): Promise<TrackPlayer.Track | undefined> => {
+  const getCurrentTrack = async (): Promise<Track | undefined> => {
     setError(null);
     try {
-      const id = await TrackPlayer.getCurrentTrack();
-      if (!id) {
+      const currentTrackIndex = await TrackPlayer.getCurrentTrack();
+      if (!currentTrackIndex) {
         return undefined;
       }
-      const current = await TrackPlayer.getTrack(id);
+      const current = await TrackPlayer.getTrack(currentTrackIndex);
       const song = new Song(
         current.id,
-        current.title,
-        current.artist,
-        current.artwork,
+        current.title || '',
+        current.artist || '',
+        current.artwork?.toString() || '',
         current.duration || 0,
-        current.url,
+        current.url.toString() || '',
       );
       dispatch(setCurrentSongPlaying(song));
       return current;
@@ -154,7 +164,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   /**
    * Get current volume
    **/
-  const getVolume = async (): Promise<void> => {
+  const getVolume = async () => {
     setError(null);
     try {
       const result = await TrackPlayer.getVolume();
@@ -168,7 +178,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   /**
    * Play current track
    **/
-  const play = async (): Promise<void> => {
+  const play = async () => {
     setError(null);
     try {
       await TrackPlayer.play();
@@ -180,7 +190,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   /**
    * Play track by Id
    * */
-  const playTrackById = async (id: string): Promise<void> => {
+  const playTrackById = async (id: number) => {
     setError(null);
     try {
       await TrackPlayer.skip(id);
@@ -193,7 +203,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   /**
    * Pause current track
    **/
-  const pauseTrack = async (): Promise<void> => {
+  const pauseTrack = async () => {
     setError(null);
     try {
       await TrackPlayer.pause();
@@ -205,7 +215,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   /**
    * Skip to next track
    **/
-  const nextTrack = async (): Promise<void> => {
+  const nextTrack = async () => {
     setError(null);
     try {
       await TrackPlayer.skipToNext();
@@ -254,11 +264,14 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * 1. Attempt to get playable link
    * 2. Add video to track queue
    * */
-  const addTrack = async (video: SearchVideoResult): Promise<void> => {
+  const addTrack = async (video: Video) => {
     setError(null);
+    if (video === undefined) {
+      return;
+    }
     try {
       //Request playable url
-      const playableLink = await getHighestAudioLink(video.url, {
+      const playableLink = await getHighestAudioLink(video?.url || '', {
         quality: 'highestaudio',
       });
 
@@ -266,7 +279,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
         video.id,
         video.title,
         video.artist,
-        video.avatar,
+        video?.avatar || '',
         video.duration,
         playableLink,
       );
@@ -285,10 +298,10 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * Remove song from queue and dispatch
    * delete to redux store
    * */
-  const removeTrack = async (song: Song): Promise<void> => {
+  const removeTrack = async (index: number, song: Song) => {
     setError(null);
     try {
-      await TrackPlayer.remove(song.id);
+      await TrackPlayer.remove(index);
       dispatch(deleteSongFromLibrary(song));
     } catch (err) {
       console.error('useMediaPlayer-removeTrack => ' + err);
@@ -313,7 +326,6 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     addTrack,
     removeTrack,
     isCurrentTrackPlaying,
-    playbackChange,
   };
 };
 

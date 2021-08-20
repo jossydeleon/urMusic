@@ -1,6 +1,4 @@
 import Song from './Song';
-import Video from './Video';
-import SearchVideoResult from './SearchVideoResult';
+import YoutubeVideo from './YoutubeVideo';
 
-export { Song, Video };
-export type { SearchVideoResult };
+export { Song, YoutubeVideo };

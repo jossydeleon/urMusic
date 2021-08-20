@@ -1,6 +1,6 @@
 import { IVideo } from '../types';
 
-class Video implements IVideo {
+class YoutubeVideo implements IVideo {
   videoId: string;
   title: string;
   artist: string;
@@ -35,4 +35,4 @@ class Video implements IVideo {
   }
 }
 
-export default Video;
+export default YoutubeVideo;

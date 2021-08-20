@@ -5,7 +5,7 @@ import styled from 'styled-components/native';
 import { PopupSheetMenu, HeaderPopup, ContentPopup } from '../components/popup';
 import { OptionsProps } from '../components/popup/types';
 import useYtdl from '../hooks/util/useYtdl';
-import { Video } from '../model';
+import { YoutubeVideo } from '../model';
 import { theme } from '../theme/theme';
 
 const Container = styled.View`
@@ -30,7 +30,7 @@ const Catcher: React.FC = () => {
   const [text, setText] = useState(
     'https://www.youtube.com/watch?v=fvcxGU8C8pw',
   );
-  const [videoInfo, setVideoInfo] = useState<Video>();
+  const [videoInfo, setVideoInfo] = useState<YoutubeVideo>();
   //State to handle popup
   const [popup, setPopup] = useState(false);
 
