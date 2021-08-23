@@ -13,4 +13,5 @@ export type BottomStackParamList = {
   HomeWelcome: undefined;
   Catcher: undefined;
   Library: undefined;
+  Demo: undefined;
 };

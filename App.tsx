@@ -9,7 +9,9 @@ import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 import RootNavigator from './src/navigation/RootNavigator';
 import { theme } from './src/theme/theme';
 import { Provider as ReduxProvider } from 'react-redux';
-import store from './src/redux/store';
+import Store from './src/state/Store';
+//import store from './src/redux/store';
+
 import TrackPlayer, { Capability } from 'react-native-track-player';
 
 const App = () => {
@@ -53,7 +55,7 @@ const App = () => {
 
   return (
     <SafeAreaProvider>
-      <ReduxProvider store={store}>
+      <ReduxProvider store={Store}>
         <SafeAreaView style={[styles.container]}>
           <StatusBar
             barStyle={'light-content'}

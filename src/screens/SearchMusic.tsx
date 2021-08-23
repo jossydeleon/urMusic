@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { theme } from '../theme/theme';
-import useGoogleAutoComplete from '../hooks/util/useGoogleAutocomplete';
 import { SearchList, SearchHeader } from '../components/searcher';
 import { PopupSheetMenu, HeaderPopup, ContentPopup } from '../components/popup';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';
@@ -29,8 +28,6 @@ type SearchMusicProps = {
 };
 
 const SearchMusic: React.FC<SearchMusicProps> = ({ navigation }) => {
-  //State to handle typing query
-  const [query, setQuery] = useState('');
   //State to handle video selected
   const [videoSelected, setVideoSelected] = useState<
     Video | undefined | null
@@ -41,9 +38,6 @@ const SearchMusic: React.FC<SearchMusicProps> = ({ navigation }) => {
     title: '',
   });
   const [addingTrack, setAddingTrack] = useState(false);
-  //Hook Google autocomplete
-  const { getAutoCompleteQueries, resetSuggestions, loading, suggestions } =
-    useGoogleAutoComplete();
   //Hook Youtube search
   const { result, fetching, searchVideos, fetchMore } = useTube();
   //Hook helpers
@@ -71,58 +65,29 @@ const SearchMusic: React.FC<SearchMusicProps> = ({ navigation }) => {
   ];
 
   useEffect(() => {
-    searchVideos('daddy yankee');
+    //searchVideos('daddy yankee');
     return () => {
       searchVideos('');
-      getAutoCompleteQueries('');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /**
-   * Effect to fetch suggestions everytime user types something
-   */
-  useEffect(() => {
-    if (!query.length) {
-      return;
-    }
-    handleFetchSuggestions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+
 
   /**
    * Close popup
    * */
   const handleClosePopup = () => {
     setPopup({ ...popup, show: false });
-    setVideoSelected(undefined);
+    //setVideoSelected(undefined);
   };
 
-  /**
-   * Handle text entry in searchbar
-   **/
-  const handleTextEntry = useCallback(
-    text => {
-      setQuery(text);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [query],
-  );
 
-  /**
-   * Fetch suggestions based on query
-   * @returns
-   */
-  const handleFetchSuggestions = useCallback(async () => {
-    await getAutoCompleteQueries(query);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
 
   /**
    * Search for videos based on query
    * */
   const handleSearch = useCallback(async terms => {
-    resetSuggestions();
     await searchVideos(terms);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -133,8 +98,7 @@ const SearchMusic: React.FC<SearchMusicProps> = ({ navigation }) => {
   const handleVideoSelected = useCallback(async video => {
     setVideoSelected(video);
     setPopup({ ...popup, show: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [popup]);
 
   /**
    * Add new song to playlist
@@ -171,7 +135,7 @@ const SearchMusic: React.FC<SearchMusicProps> = ({ navigation }) => {
         return null;
       },
     });
-  }, [navigation, query]);
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -182,12 +146,8 @@ const SearchMusic: React.FC<SearchMusicProps> = ({ navigation }) => {
         onRefresh={fetchMore}
         headerComponent={
           <SearchHeader
-            value={query}
-            isLoading={loading}
-            showResults={query.length > 0}
+            showLoading={true}
             placeholder={'Search music'}
-            data={suggestions}
-            onChangeValue={handleTextEntry}
             onSearch={handleSearch}
           />
         }

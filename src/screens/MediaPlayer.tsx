@@ -14,10 +14,10 @@ import { BackgroundedButton } from '../components/styled';
 import { theme } from '../theme/theme';
 import useHelpers from '../hooks/util/useHelpers';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';
-import { IPlayerState } from '../types';
 import { StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../navigation/types';
+import { RootStore } from '../state/Store';
 
 const Container = styled.View`
   flex: 1;
@@ -90,7 +90,7 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ navigation }) => {
 
   //Redux
   const { currentSongPlaying, isPlaying } = useSelector(
-    (state: IPlayerState) => state,
+    (state: RootStore) => state.player,
   );
   //const { } = actionsCreator.playerActions;
 
@@ -124,7 +124,7 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ navigation }) => {
    */
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => 'Now Playing',
+      headerTitle: 'Now Playing',
       //headerHeight: 60,
       headerBackImage: props => (
         <BackgroundedButton name="chevron-left" {...props} size={20} />

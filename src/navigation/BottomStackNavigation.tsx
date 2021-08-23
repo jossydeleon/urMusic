@@ -22,11 +22,13 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomStackParamList, MainStackParamList } from './types';
 import {
   CATCHER_SCREEN,
+  DEMO_SCREEN,
   HOME_WELCOME_SCREEN,
   LIBRARY_SCREEN,
   SEARCH_MUSIC_SCREEN,
   SETTINGS_SCREEN,
 } from './routes';
+import Demo from '../screens/Demo';
 
 type BottomStackNavigationProps = StackNavigationProp<
   MainStackParamList,
@@ -188,6 +190,16 @@ const BottomStackNavigation: React.FC<BottomHomeProps> = ({
           options={{
             tabBarIcon: ({ color }) => (
               <IconFontAwesome name="music" color={color} size={18} />
+            ),
+          }}
+        />
+
+        <BottomTabs.Screen
+          name={DEMO_SCREEN}
+          component={Demo}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <IconFontAwesome name="bug" color={color} size={18} />
             ),
           }}
         />

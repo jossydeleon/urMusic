@@ -4,7 +4,7 @@ export interface Video {
   title: string;
   artist: string;
   duration: number;
-  publishedAt: Date;
+  publishedAt: Date | string;
   thumbnails?: Object[];
   avatar?: string; //image with max resolution
   url?: string;

@@ -24,7 +24,7 @@ const ContentPopup: React.FC<PopupProps> = ({ options, onCancel }) => {
         <View key={index} style={styles.listContainer}>
           <TouchableOpacity
             style={styles.listItemContainer}
-            onPress={() => option.func}>
+            onPress={option.func}>
             <IconFontAwesome
               name={option.icon}
               color="gray"

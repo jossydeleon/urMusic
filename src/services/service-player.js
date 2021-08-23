@@ -10,20 +10,24 @@ module.exports = async function () {
   });
 
   TrackPlayer.addEventListener('remote-next', () => {
-    TrackPlayer.skipToNext();
+    try {
+      TrackPlayer.skipToNext();
+    } catch (err) {
+      console.error('Error from service-player: ', err);
+    }
   });
 
-  TrackPlayer.addEventListener('remote-previous', data => {
-    console.log(JSON.stringify(data));
-    //TrackPlayer.skipToPrevious()
+  TrackPlayer.addEventListener('remote-previous', () => {
+    try {
+      TrackPlayer.skipToPrevious();
+    } catch (err) {
+      console.error('Error from service-player: ', err);
+    }
   });
 
   TrackPlayer.addEventListener('remote-stop', () => {
     TrackPlayer.destroy();
   });
-
-  TrackPlayer.addEventListener('playback-state', () => {});
-  TrackPlayer.addEventListener('playback-track-changed', d => {});
 
   return () => {
     console.log('Unmonting services...');

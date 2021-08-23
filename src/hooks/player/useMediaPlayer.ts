@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import actionsCreators from '../../redux/actions';
+import * as actionsCreators from '../../state/actions/LibraryActions';
 import { useDispatch } from 'react-redux';
 import useYtdl from '../util/useYtdl';
 import TrackPlayer, {
@@ -12,6 +12,10 @@ import TrackPlayer, {
 } from 'react-native-track-player';
 import { Song } from '../../model';
 import { Video } from '../util/react-usetube/types';
+import {
+  setCurrentSongPlaying,
+  setIsPlaying,
+} from '../../state/actions/PlayerActions';
 
 const EventTypes = [
   Event.PlaybackState,
@@ -26,13 +30,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
 
   //Redux
   const dispatch = useDispatch();
-  const {
-    addSongToLibrary,
-    deleteSongFromLibrary,
-    setCurrentSongPlaying,
-    setIsPlayingAnySong,
-    setVolumeState,
-  } = actionsCreators.playerActions;
+  const { addSongToLibrary, deleteSongFromLibrary } = actionsCreators;
 
   //TrackPlayer Hooks
   const progress = useProgress();
@@ -44,7 +42,6 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   const [error, setError] = useState(null);
 
   const [duration, setDuration] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolumePosition] = useState(0);
 
   /**
@@ -54,10 +51,21 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     switch (event.type) {
       case Event.PlaybackTrackChanged:
         if (event.nextTrack !== undefined) {
-          setCurrentTrack(undefined);
-        } else {
           const track = await TrackPlayer.getTrack(event.nextTrack);
           setCurrentTrack(track);
+
+          const song = new Song(
+            track.id,
+            track.title || '',
+            track.artist || '',
+            track.artwork?.toString() || '',
+            track.duration || 0,
+            track.url.toString(),
+          );
+
+          dispatch(setCurrentSongPlaying(song));
+        } else {
+          setCurrentTrack(undefined);
         }
         break;
       case Event.RemotePause:
@@ -83,7 +91,6 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    **/
   useEffect(() => {
     getVolume();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -92,8 +99,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   useEffect(() => {
     const result =
       playbackState === State.Playing || playbackState === State.Buffering;
-    setIsPlaying(result);
-    dispatch(setIsPlayingAnySong(result));
+    dispatch(setIsPlaying(result));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playbackState]);
 
@@ -102,7 +108,6 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * */
   useEffect(() => {
     getCurrentTrack();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrack]);
 
   /**
@@ -132,7 +137,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * */
   const isCurrentTrackPlaying = async (id: number): Promise<boolean> => {
     const current = await TrackPlayer.getCurrentTrack();
-    return current === id && isPlaying;
+    return current === id && playbackState === State.Playing;
   };
   /**
    * Get current track active in the queue
@@ -146,6 +151,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
         return undefined;
       }
       const current = await TrackPlayer.getTrack(currentTrackIndex);
+      /*
       const song = new Song(
         current.id,
         current.title || '',
@@ -154,7 +160,8 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
         current.duration || 0,
         current.url.toString() || '',
       );
-      dispatch(setCurrentSongPlaying(song));
+      */
+      //dispatch(setCurrentSongPlaying(song));
       return current;
     } catch (err) {
       setError(err);
@@ -169,7 +176,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     try {
       const result = await TrackPlayer.getVolume();
       setVolumePosition(result);
-      dispatch(setVolumeState(result));
+      //dispatch(setVolumeState(result));
     } catch (err) {
       setError(err);
     }
@@ -191,8 +198,12 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * Play track by Id
    * */
   const playTrackById = async (id: number) => {
+    console.log(id);
     setError(null);
     try {
+      if (playbackState === State.Playing) {
+        //await TrackPlayer.pause();
+      }
       await TrackPlayer.skip(id);
     } catch (err) {
       setError(err);
@@ -253,7 +264,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     setError(null);
     try {
       await TrackPlayer.setVolume(value);
-      dispatch(setVolumeState(value));
+      //dispatch(setVolumeState(value));
     } catch (err) {
       setError(err);
     }
@@ -264,33 +275,28 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * 1. Attempt to get playable link
    * 2. Add video to track queue
    * */
-  const addTrack = async (video: Video) => {
-    setError(null);
-    if (video === undefined) {
-      return;
-    }
-    try {
-      //Request playable url
-      const playableLink = await getHighestAudioLink(video?.url || '', {
-        quality: 'highestaudio',
-      });
+  const addTrack = async (video: Video | undefined) => {
+    if (video) {
+      console.log('Running addTrack: ' + video.title);
+      setError(null);
+      if (video === undefined) {
+        return;
+      }
+      try {
+        const song = await createSong(video);
 
-      const song = new Song(
-        video.id,
-        video.title,
-        video.artist,
-        video?.avatar || '',
-        video.duration,
-        playableLink,
-      );
+        if (!song) {
+          return;
+        }
 
-      await TrackPlayer.add(song);
-      await TrackPlayer.play();
+        await TrackPlayer.add(song);
+        await TrackPlayer.play();
 
-      dispatch(addSongToLibrary(song));
-    } catch (err) {
-      console.error('useMediaPlayer-addTrack => ' + err);
-      setError(err);
+        dispatch(addSongToLibrary(song));
+      } catch (err) {
+        console.error('useMediaPlayer-addTrack => ' + err);
+        setError(err);
+      }
     }
   };
 
@@ -309,10 +315,43 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     }
   };
 
+  /**
+   * Convert track to song type
+   * */
+  const createSong = async (track: Video) => {
+    try {
+      let url: string;
+      if (isTrack(track)) {
+        url = track.url.toString();
+      } else {
+        url = track.url?.toString() || '';
+      }
+
+      //Request playable url
+      const playableLink = await getHighestAudioLink(url, {
+        quality: 'highestaudio',
+      });
+
+      return new Song(
+        track.id,
+        track.title || '',
+        track.artist || '',
+        track?.avatar || '',
+        track.duration || 0,
+        playableLink,
+      );
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  const isTrack = (t: Track | Video): t is Track => {
+    return (t as Track).type !== undefined;
+  };
+
   return {
     position,
     duration,
-    isPlaying,
     currentTrack,
     volume,
     getCurrentTrack,

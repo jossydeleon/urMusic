@@ -7,8 +7,8 @@ import IconFontAwesome from './IconFontAwesome';
 import SliderTrack from './SliderTrack';
 import useHelpers from '../hooks/util/useHelpers';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';
-import { IPlayerState } from '../types';
 import { MEDIA_PLAYER_SCREEN } from '../navigation';
+import { RootStore } from '../state/Store';
 
 const ParentContainer = styled.View``;
 
@@ -43,7 +43,7 @@ const MiniPlayer: React.FC<MiniPlayerProps> = ({ navigator }) => {
   const { transformTitle } = useHelpers();
   //Redux
   const { currentSongPlaying, isPlaying } = useSelector(
-    (state: IPlayerState) => state,
+    (state: RootStore) => state.player,
   );
   //useMediaPlayer
   const { position, duration, nextTrack, previousTrack, play, pauseTrack } =

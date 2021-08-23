@@ -6,23 +6,26 @@ import { useSelector } from 'react-redux';
 import useHelpers from '../../hooks/util/useHelpers';
 import { theme } from '../../theme/theme';
 import { BackgroundedButton } from '../styled';
-import { IPlayerState, ISong } from '../../types';
+import { ISong } from '../../types';
+import { RootStore } from '../../state/Store';
+import useMediaPlayer from '../../hooks/player/useMediaPlayer';
 
 interface LibraryItemProps {
   song: ISong;
-  onPlay: (song: ISong) => void;
-  onDelete: (song: ISong) => void;
+  position: number;
 }
 
 const LibraryItem: React.FC<LibraryItemProps> = ({
-  song,
-  onPlay,
-  onDelete,
+  song, position,
 }) => {
   //Redux
   const { currentSongPlaying, isPlaying } = useSelector(
-    (state: IPlayerState) => state,
+    (state: RootStore) => state.player,
   );
+
+  //Hook media players
+  const { pauseTrack, playTrackById, play, removeTrack } = useMediaPlayer();
+
   //Hook helpers
   const { transformTitle } = useHelpers();
   //State to update play/pause button
@@ -33,7 +36,7 @@ const LibraryItem: React.FC<LibraryItemProps> = ({
    * */
   useEffect(() => {
     isTrackPlaying();
-  }, [isPlaying]);
+  }, [isPlaying, currentSongPlaying]);
 
   /**
    * Functions to check if this song is the current track.
@@ -41,10 +44,36 @@ const LibraryItem: React.FC<LibraryItemProps> = ({
   const isTrackPlaying = async () => {
     const result = currentSongPlaying?.id === song.id;
     if (result) {
-      setIsThisSongPlaying(true);
+      setIsThisSongPlaying(result && isPlaying);
     } else {
       setIsThisSongPlaying(false);
     }
+  };
+
+  /**
+   * Play selected song
+   **/
+  const handlePlayPauseButton = async (index: number) => {
+    if (currentSongPlaying?.id === song.id && isPlaying) {
+      await pauseTrack();
+    }
+    else
+      if (currentSongPlaying?.id === song.id && !isPlaying) {
+        await play();
+      }
+      else {
+        await playTrackById(index);
+      }
+  };
+
+  /**
+   * Delete song
+   **/
+  const handleDeleteSong = async (index: number, track: ISong) => {
+    if (!song) {
+      return;
+    }
+    await removeTrack(index, track);
   };
 
   //Button delete
@@ -52,14 +81,14 @@ const LibraryItem: React.FC<LibraryItemProps> = ({
     <Button
       icon={{ name: 'delete', color: 'white' }}
       buttonStyle={styles.buttonDelete}
-      onPress={() => onDelete(song)}
+      onPress={() => handleDeleteSong(position, song)}
     />
   );
 
   return (
     <ListItem.Swipeable
       containerStyle={styles.containerItem}
-      onPress={() => onPlay(song)}
+      onPress={() => handlePlayPauseButton(position)}
       leftContent={<ButtonDelete />}>
       <ListItem.Content>
         <ListItem.Title style={styles.title}>
@@ -74,7 +103,7 @@ const LibraryItem: React.FC<LibraryItemProps> = ({
         name={isThisSongPlaying ? 'pause' : 'play'}
         size={17}
         bgColor={isThisSongPlaying ? theme.colors.primary : theme.colors.dark}
-        onPress={() => onPlay(song)}
+        onPress={() => handlePlayPauseButton(position)}
       />
     </ListItem.Swipeable>
   );

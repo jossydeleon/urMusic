@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 import MiniPlayer from '../components/MiniPlayer';
 import { theme } from '../theme/theme';
-import { IPlayerState } from '../types';
 import { BottomStackParamList } from '../navigation/types';
+import { RootStore } from '../state/Store';
 
 const Container = styled.View`
   flex: 1;
@@ -30,7 +30,7 @@ type HomeProps = {
 
 const HomeWelcome: React.FC<HomeProps> = ({ navigation }) => {
   //Redux
-  const { currentSongPlaying } = useSelector((state: IPlayerState) => state);
+  const { currentSongPlaying } = useSelector((state: RootStore) => state.player);
 
   return (
     <Container>

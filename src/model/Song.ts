@@ -25,7 +25,7 @@ class Song implements ISong {
     this.url = url;
   }
 
-  static getPlayableUrl = async (id: string) => {
+  static getPlayableUrl = async (id: string): Promise<string | undefined> => {
     const playableUrl = await getHighestAudioLinkClass(
       'https://youtube.com/watch?v=' + id,
     );
