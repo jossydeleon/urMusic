@@ -3,14 +3,13 @@ import {
   ActivityIndicator,
   SafeAreaView,
   StatusBar,
-  TouchableOpacity,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 import ArtSlider from '../components/ArtSlider';
-import IconFontAwesome from '../components/IconFontAwesome';
+import { IconFontAwesome } from '../components/IconFontAwesome';
 import SliderTrack from '../components/SliderTrack';
-import { BackgroundedButton } from '../components/styled';
+import { BackButton } from '../components/BackButton';
 import { theme } from '../theme/theme';
 import useHelpers from '../hooks/util/useHelpers';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';
@@ -18,6 +17,8 @@ import { StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../navigation/types';
 import { RootStore } from '../state/Store';
+import ToggleButton from '../components/ToggleButton';
+import BackgroundedButton from '../components/BackgroundedButton';
 
 const Container = styled.View`
   flex: 1;
@@ -52,14 +53,6 @@ const Box = styled.View`
   align-items: center;
 `;
 
-const PlayPauseButton = styled(IconFontAwesome).attrs({
-  containerStyle: {
-    backgroundColor: theme.colors.primary,
-    padding: 15,
-    borderRadius: 13,
-  },
-})``;
-
 const AudioControl = styled.View`
   flex-direction: row;
   padding-left: 50px;
@@ -89,7 +82,7 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ navigation }) => {
   const { transformTitle } = useHelpers();
 
   //Redux
-  const { currentSongPlaying, isPlaying } = useSelector(
+  const { currentSongPlaying, isPlaying, repeatMode } = useSelector(
     (state: RootStore) => state.player,
   );
   //const { } = actionsCreator.playerActions;
@@ -105,6 +98,8 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ navigation }) => {
     pauseTrack,
     seekTo,
     setVolume,
+    setRepeatModeOff,
+    setRepeatModeQueue,
   } = useMediaPlayer(true);
 
   /*
@@ -127,7 +122,7 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ navigation }) => {
       headerTitle: 'Now Playing',
       //headerHeight: 60,
       headerBackImage: props => (
-        <BackgroundedButton name="chevron-left" {...props} size={20} />
+        <BackButton name="chevron-left" size={20} {...props} />
       ),
     });
   }, [navigation]);
@@ -172,6 +167,15 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ navigation }) => {
     await setVolume(value);
   };
 
+  const handleRepeatMode = async () => {
+    if (repeatMode === 'off') {
+      await setRepeatModeQueue();
+    }
+    else {
+      await setRepeatModeOff();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -194,12 +198,29 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ navigation }) => {
         </Box>
         <Box>
           <IconFontAwesome name="random" />
-          <IconFontAwesome name="backward" onPress={handleSkipTrack} />
-          <TouchableOpacity onPress={handlePlayPauseTrack}>
-            <PlayPauseButton name={isPlaying ? 'pause' : 'play'} />
-          </TouchableOpacity>
-          <IconFontAwesome name="forward" onPress={handleNextTrack} />
-          <IconFontAwesome name="reply-all" />
+
+          <ToggleButton
+            icon="backward"
+            onPress={handleSkipTrack}
+          />
+
+          <BackgroundedButton
+            name={isPlaying ? 'pause' : 'play'}
+            bgColor={theme.colors.primary}
+            onPress={handlePlayPauseTrack}
+          />
+
+          <ToggleButton
+            icon="forward"
+            onPress={handleNextTrack}
+          />
+
+          <ToggleButton
+            icon="sync"
+            color={repeatMode === 'off' ? 'white' : theme.colors.primary}
+            onPress={handleRepeatMode}
+          />
+
         </Box>
         <AudioControl>
           <IconFontAwesome

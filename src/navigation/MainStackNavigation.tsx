@@ -9,7 +9,7 @@ import { theme } from '../theme/theme.js';
 import MediaPlayer from '../screens/MediaPlayer';
 import Settings from '../screens/Settings';
 import SearchMusic from '../screens/SearchMusic';
-import { BackgroundedButton } from '../components/styled';
+import { BackButton } from '../components/BackButton';
 import Demo from '../screens/Demo';
 import {
   DEMO_SCREEN,
@@ -44,7 +44,7 @@ const MainStackNavigation: React.FC = () => {
           fontWeight: 'bold',
         },
         headerBackImage: props => (
-          <BackgroundedButton name="chevron-left" size={20} {...props} />
+          <BackButton name="chevron-left" size={20} {...props} />
         ),
       }}>
       <Stack.Screen

@@ -1,7 +1,8 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
+import BackgroundedButton from '../components/BackgroundedButton';
 import { dummyVideos } from '../dummy';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';
 import { Video } from '../hooks/util/react-usetube/types';
@@ -21,17 +22,15 @@ const Demo: React.FC = () => {
 
   const handleAddTrack = async (tracks: Video[]) => {
     console.log('Adding Tracks');
-    try {
-      tracks.map(async (item) => await addTrack(item));
-    } catch (err) {
-      console.error('Error trying to add track...', err);
+    for await (const track of tracks) {
+      addTrack(track);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.greeting}>I am Demo Screen!</Text>
-      <Button onPress={() => handleAddTrack(dummyVideos)} title="Add Playlist" />
+      <Text style={styles.greeting}>Add Dummy Music</Text>
+      <BackgroundedButton name="music" backgroundColor={theme.colors.primary} onPress={() => handleAddTrack(dummyVideos)} />
     </View>
   );
 };
@@ -40,13 +39,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.darker,
-    paddingHorizontal: 10,
+    paddingHorizontal: 50,
+    padding: 20,
   },
   greeting: {
     color: 'white',
     fontSize: 20,
     textAlign: 'center',
-    paddingTop: 50,
+    padding: 20,
   },
 });
 

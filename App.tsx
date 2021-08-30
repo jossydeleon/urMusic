@@ -5,16 +5,17 @@
 
 import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import { SafeAreaView, StatusBar, StyleSheet, LogBox } from 'react-native';
 import RootNavigator from './src/navigation/RootNavigator';
 import { theme } from './src/theme/theme';
 import { Provider as ReduxProvider } from 'react-redux';
 import Store from './src/state/Store';
-//import store from './src/redux/store';
-
 import TrackPlayer, { Capability } from 'react-native-track-player';
 
 const App = () => {
+
+  LogBox.ignoreAllLogs(true);
+
   /**
    * Effect to setup TrackPlayer
    */
@@ -28,7 +29,9 @@ const App = () => {
    */
   const setUpTrackPlayer = async () => {
     try {
-      await TrackPlayer.setupPlayer({});
+      await TrackPlayer.setupPlayer({
+        maxCacheSize: 1000000, //1Gb by default
+      });
       await TrackPlayer.updateOptions({
         stopWithApp: true,
         capabilities: [

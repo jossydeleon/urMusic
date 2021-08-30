@@ -1,35 +1,33 @@
 import TrackPlayer from 'react-native-track-player';
 
 module.exports = async function () {
-  TrackPlayer.addEventListener('remote-play', () => {
-    TrackPlayer.play();
-  });
-
-  TrackPlayer.addEventListener('remote-pause', () => {
-    TrackPlayer.pause();
-  });
-
-  TrackPlayer.addEventListener('remote-next', () => {
+  TrackPlayer.addEventListener('remote-play', async () => {
     try {
-      TrackPlayer.skipToNext();
-    } catch (err) {
-      console.error('Error from service-player: ', err);
-    }
+      await TrackPlayer.play();
+    } catch (err) {}
   });
 
-  TrackPlayer.addEventListener('remote-previous', () => {
+  TrackPlayer.addEventListener('remote-pause', async () => {
     try {
-      TrackPlayer.skipToPrevious();
-    } catch (err) {
-      console.error('Error from service-player: ', err);
-    }
+      await TrackPlayer.pause();
+    } catch (err) {}
   });
 
-  TrackPlayer.addEventListener('remote-stop', () => {
-    TrackPlayer.destroy();
+  TrackPlayer.addEventListener('remote-next', async () => {
+    try {
+      await TrackPlayer.skipToNext();
+    } catch (err) {}
   });
 
-  return () => {
-    console.log('Unmonting services...');
-  };
+  TrackPlayer.addEventListener('remote-previous', async () => {
+    try {
+      await TrackPlayer.skipToPrevious();
+    } catch (err) {}
+  });
+
+  TrackPlayer.addEventListener('remote-stop', async () => {
+    try {
+      await TrackPlayer.destroy();
+    } catch (err) {}
+  });
 };

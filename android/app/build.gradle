@@ -1,5 +1,20 @@
 apply plugin: "com.android.application"
 
+//React Native Vectors
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+
+project.ext.vectoricons = [
+    iconFontNames: [ 
+        'MaterialIcons.ttf', 
+        'EvilIcons.ttf', 
+        'FontAwesome.ttf', 
+        'FontAwesome5_Brands',
+        'FontAwesome5_Regular.ttf',
+        'FontAwesome5_Solid.ttf',
+        'Ionicons.ttf' ,
+        ] // Name of the font files you want to copy
+]
+
 import com.android.build.OutputFile
 
 /**
@@ -82,14 +97,6 @@ project.ext.react = [
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
-
-
-//React Native Vectors
-project.ext.vectoricons = [
-    iconFontNames: [ 'MaterialIcons.ttf', 'EvilIcons.ttf', 'FontAwesome.ttf, Ionicons.ttf' ] // Name of the font files you want to copy
-]
-
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 
 /**
@@ -228,4 +235,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); 
+applyNativeModulesAppBuildGradle(project)

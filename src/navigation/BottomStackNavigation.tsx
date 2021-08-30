@@ -11,7 +11,7 @@ import {
   getFocusedRouteNameFromRoute,
   RouteProp,
 } from '@react-navigation/native';
-import IconFontAwesome from '../components/IconFontAwesome';
+import { IconFontAwesome, IconFontAwesomeFive } from '../components/IconFontAwesome';
 import Home from '../screens/HomeWelcome';
 import Library from '../screens/Library';
 import Catcher from '../screens/Catcher';
@@ -179,7 +179,7 @@ const BottomStackNavigation: React.FC<BottomHomeProps> = ({
           component={Catcher}
           options={{
             tabBarIcon: ({ color }) => (
-              <IconFontAwesome name="youtube" color={color} size={18} />
+              <IconFontAwesomeFive name="cloud-download-alt" color={color} size={18} />
             ),
           }}
         />

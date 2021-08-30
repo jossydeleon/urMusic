@@ -5,10 +5,10 @@ import { ListItem, Button } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import useHelpers from '../../hooks/util/useHelpers';
 import { theme } from '../../theme/theme';
-import { BackgroundedButton } from '../styled';
 import { ISong } from '../../types';
 import { RootStore } from '../../state/Store';
 import useMediaPlayer from '../../hooks/player/useMediaPlayer';
+import BackgroundedButton from '../BackgroundedButton';
 
 interface LibraryItemProps {
   song: ISong;

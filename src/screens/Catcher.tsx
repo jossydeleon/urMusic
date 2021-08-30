@@ -98,7 +98,7 @@ const Catcher: React.FC = () => {
               }
               rightIcon={{
                 type: 'font-awesome-5',
-                name: 'searchengin',
+                name: 'cloud-download-alt',
                 color: theme.colors.gray,
                 onPress: () => handleGetVideoInfo(),
               }}

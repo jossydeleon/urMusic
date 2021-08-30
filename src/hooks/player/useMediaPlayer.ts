@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import useYtdl from '../util/useYtdl';
 import TrackPlayer, {
   Event,
+  RepeatMode,
   State,
   Track,
   usePlaybackState,
@@ -15,6 +16,7 @@ import { Video } from '../util/react-usetube/types';
 import {
   setCurrentSongPlaying,
   setIsPlaying,
+  setRepeatMode,
 } from '../../state/actions/PlayerActions';
 
 const EventTypes = [
@@ -28,12 +30,12 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   //Hook Youtube catcher link
   const { getHighestAudioLink } = useYtdl();
 
-  //Redux
+  //Dispatch
   const dispatch = useDispatch();
   const { addSongToLibrary, deleteSongFromLibrary } = actionsCreators;
 
   //TrackPlayer Hooks
-  const progress = useProgress();
+  //const progress = useProgress();
   const playbackState = usePlaybackState();
 
   //States
@@ -45,7 +47,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   const [volume, setVolumePosition] = useState(0);
 
   /**
-   *
+   * hook that get fires when there are changes in the playback
    **/
   useTrackPlayerEvents(EventTypes, async event => {
     switch (event.type) {
@@ -113,24 +115,24 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   /**
    * Effect to set current duration in seconds of a track
    * */
-  useEffect(() => {
-    if (!isMediaPlayerComponent) {
-      return;
-    }
-    setDuration(progress.duration);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [progress.duration]);
+  // useEffect(() => {
+  //   if (!isMediaPlayerComponent) {
+  //     return;
+  //   }
+  //   setDuration(progress.duration);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [progress.duration]);
 
   /**
    * Effect to set current position in seconds of a track
    * */
-  useEffect(() => {
-    if (!isMediaPlayerComponent) {
-      return;
-    }
-    setPosition(progress.position);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [progress.position]);
+  // useEffect(() => {
+  //   if (!isMediaPlayerComponent) {
+  //     return;
+  //   }
+  //   setPosition(progress.position);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [progress.position]);
 
   /**
    * Return if track sent by id is playing.
@@ -231,7 +233,12 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     try {
       await TrackPlayer.skipToNext();
     } catch (err) {
-      setError(err);
+      const queueSize = (await TrackPlayer.getQueue()).length;
+      if (queueSize > 0) {
+        TrackPlayer.skip(0);
+      } else {
+        console.log('I cannot go to Next track. Queue is empty');
+      }
     }
   };
 
@@ -243,7 +250,12 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     try {
       await TrackPlayer.skipToPrevious();
     } catch (err) {
-      setError(err);
+      const queueSize = (await TrackPlayer.getQueue()).length;
+      if (queueSize > 0) {
+        TrackPlayer.skip(queueSize - 1);
+      } else {
+        console.log('I cannot go to Previous track. Queue is empty');
+      }
     }
   };
 
@@ -277,7 +289,6 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
    * */
   const addTrack = async (video: Video | undefined) => {
     if (video) {
-      console.log('Running addTrack: ' + video.title);
       setError(null);
       if (video === undefined) {
         return;
@@ -349,6 +360,44 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     return (t as Track).type !== undefined;
   };
 
+  const setRepeatModeQueue = async () => {
+    try {
+      await TrackPlayer.setRepeatMode(RepeatMode.Queue);
+      dispatch(setRepeatMode('queue'));
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  const setRepeatModeOff = async () => {
+    try {
+      await TrackPlayer.setRepeatMode(RepeatMode.Off);
+      dispatch(setRepeatMode('off'));
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  const setCacheSize = async (size: number) => {
+    try {
+      await TrackPlayer.setupPlayer({
+        maxCacheSize: size,
+      });
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  const setBuffer = async (value: boolean) => {
+    try {
+      await TrackPlayer.setupPlayer({
+        waitForBuffer: value,
+      });
+    } catch (err) {
+      setError(err);
+    }
+  };
+
   return {
     position,
     duration,
@@ -365,6 +414,10 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     addTrack,
     removeTrack,
     isCurrentTrackPlaying,
+    setRepeatModeQueue,
+    setRepeatModeOff,
+    setCacheSize,
+    setBuffer,
   };
 };
 

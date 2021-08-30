@@ -3,7 +3,7 @@ import { ListItem, Avatar } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 import { theme } from '../theme/theme';
-import IconFontAwesome from './IconFontAwesome';
+import { IconFontAwesome } from './IconFontAwesome';
 import SliderTrack from './SliderTrack';
 import useHelpers from '../hooks/util/useHelpers';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';

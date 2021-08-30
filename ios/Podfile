@@ -13,7 +13,6 @@ target 'urMusic' do
   )
 
 
-  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
   target 'urMusicTests' do
     inherit! :complete
@@ -29,4 +28,7 @@ target 'urMusic' do
   post_install do |installer|
     react_native_post_install(installer)
   end
+
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
 end

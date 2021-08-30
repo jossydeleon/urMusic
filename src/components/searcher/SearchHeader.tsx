@@ -5,7 +5,7 @@ import { SearchBar } from 'react-native-elements';
 import styled from 'styled-components/native';
 import { theme } from '../../theme/theme';
 import { AutocompleteInput, AutocompleteItem } from '../autocomplete';
-import { BackgroundedButton } from '../styled';
+import { BackButton } from '../BackButton';
 import { StyleSheet, View } from 'react-native';
 import { SearchMusicScreenNavigationProp } from '../../screens/SearchMusic';
 import useGoogleAutoComplete from '../../hooks/util/useGoogleAutocomplete';
@@ -99,7 +99,7 @@ const SearchHeader: React.FC<SearchHeaderProps> = props => {
   return (
     <View>
       <ContentContainer>
-        <BackgroundedButton
+        <BackButton
           name="chevron-left"
           onPress={() => navigation.pop()}
         />
