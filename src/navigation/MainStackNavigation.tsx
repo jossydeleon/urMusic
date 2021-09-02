@@ -30,7 +30,7 @@ const MainStackNavigation: React.FC = () => {
       mode="modal"
       headerMode="screen"
       screenOptions={{
-        gestureEnabled: true,
+        //gestureEnabled: true,
         headerBackTitleVisible: false,
         headerStyle: {
           backgroundColor: theme.colors.dark,
