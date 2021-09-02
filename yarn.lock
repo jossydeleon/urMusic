@@ -969,10 +969,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@react-native-async-storage/async-storage@^1.15.5":
-  version "1.15.6"
-  resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.15.6.tgz#a4fd461d2d891326e006d2284d060229f6c2b328"
-  integrity sha512-kVfy6O5Xbce9GfD9Islxn5JaOczNz6dF3Ce/7tP4foVLPNwo7UfdgXeKZ7iac07ZbvDvViSUuNyzzrN81FgqkQ==
+"@react-native-async-storage/async-storage@^1.15.7":
+  version "1.15.7"
+  resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.15.7.tgz#736ac5cfe211b081e70389e80c237398d1451f08"
+  integrity sha512-ctD51BxjBxSSZ/3xCxQ//e10nP3rWFuOABsOGCGCqCXO4ypznK+fcWONHI6fIZubfV5KdyBJnNXcKtXRjocE5Q==
   dependencies:
     merge-options "^3.0.4"
 
@@ -5883,6 +5883,11 @@ redux-devtools-extension@^2.13.9:
   version "2.13.9"
   resolved "https://registry.yarnpkg.com/redux-devtools-extension/-/redux-devtools-extension-2.13.9.tgz#6b764e8028b507adcb75a1cae790f71e6be08ae7"
   integrity sha512-cNJ8Q/EtjhQaZ71c8I9+BPySIBVEKssbPpskBfsXqb8HJ002A3KRVHfeRzwRo6mGPqsm7XuHTqNSNeS1Khig0A==
+
+redux-persist@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-6.0.0.tgz#b4d2972f9859597c130d40d4b146fecdab51b3a8"
+  integrity sha512-71LLMbUq2r02ng2We9S215LtPu3fY0KgaGE0k8WRgl6RkqxtGfl7HUozz1Dftwsb0D/5mZ8dwAaPbtnzfvbEwQ==
 
 redux-thunk@*, redux-thunk@^2.3.0:
   version "2.3.0"

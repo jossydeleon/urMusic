@@ -192,10 +192,10 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ navigation }) => {
         <Author>YouTube</Author>
       </Container>
       <ContainerPanelControl>
-        <Box>
+        {/* <Box>
           <IconFontAwesome name="heart" />
           <IconFontAwesome name="music" />
-        </Box>
+        </Box> */}
         <Box>
           <IconFontAwesome name="random" />
 

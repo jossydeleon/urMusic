@@ -19,8 +19,8 @@ Although the app runs for iOS and Android, it can only stream music on Android d
 - react-native-svg to handle Circle Slider
 - momentjs for date handling (I will change it later for another maintained library)
 - react-native-url-polyfill as a work-around to support URL in React Native
-- Redux with redux-thunk to make async computations
-- react-native-ytdl
+- Redux to manage app state
+- Redux-thunk to make async computations
 
 #### **What is doing?**
 

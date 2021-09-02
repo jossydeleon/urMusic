@@ -1,3 +1,6 @@
+import { Track } from 'react-native-track-player';
+import { Video } from '../hooks/util/react-usetube/types';
+
 export interface IVideo {
   videoId: string;
   title: string;
@@ -34,4 +37,18 @@ export function createAction<T extends string, P>(
   payload: P,
 ): IAction<T, P> {
   return { type, payload };
+}
+
+export const isTrackType = (t: Track | Video | ISong): t is Track => {
+  return (t as Track).pitchAlgorithm !== undefined;
+};
+
+export function isVideoType(
+  video: ISong | Video | ISong[] | Video[],
+): video is Video {
+  if (Array.isArray(video) && video.length > 0) {
+    return (video[0] as Video).original_title !== undefined;
+  } else {
+    return (video as Video).original_title !== undefined;
+  }
 }

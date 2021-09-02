@@ -1,30 +1,18 @@
 import React from 'react';
-import { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { useSelector } from 'react-redux';
 import BackgroundedButton from '../components/BackgroundedButton';
 import { dummyVideos } from '../dummy';
 import useMediaPlayer from '../hooks/player/useMediaPlayer';
 import { Video } from '../hooks/util/react-usetube/types';
-import { RootStore } from '../state/Store';
 import { theme } from '../theme/theme';
 
 const Demo: React.FC = () => {
-  const { addTrack } = useMediaPlayer();
+  const { addLibrary, createSong } = useMediaPlayer();
 
-  const { currentSongPlaying } = useSelector((state: RootStore) => state.player);
-
-  useEffect(() => {
-    if (currentSongPlaying) {
-      console.log('Current Song Playing: ' + currentSongPlaying.title);
-    }
-  }, [currentSongPlaying]);
-
-  const handleAddTrack = async (tracks: Video[]) => {
-    console.log('Adding Tracks');
-    for await (const track of tracks) {
-      addTrack(track);
-    }
+  const handleAddTrack = async (videos: Video[]) => {
+    console.log('Adding Tracks to Library');
+    const songs = Promise.all(videos.map(video => createSong(video)));
+    addLibrary(await songs);
   };
 
   return (

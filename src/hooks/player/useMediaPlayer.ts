@@ -18,6 +18,7 @@ import {
   setIsPlaying,
   setRepeatMode,
 } from '../../state/actions/PlayerActions';
+import { ISong, isTrackType } from '../../types';
 
 const EventTypes = [
   Event.PlaybackState,
@@ -32,7 +33,8 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
 
   //Dispatch
   const dispatch = useDispatch();
-  const { addSongToLibrary, deleteSongFromLibrary } = actionsCreators;
+  const { loadLibrary, addSongToLibrary, deleteSongFromLibrary } =
+    actionsCreators;
 
   //TrackPlayer Hooks
   //const progress = useProgress();
@@ -282,6 +284,12 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     }
   };
 
+  const addLibrary = (library: ISong[]) => {
+    console.log('addLibrary from useMediaPlayer...');
+    library.map(song => console.log(song.title));
+    dispatch(loadLibrary(library));
+  };
+
   /**
    * Add video from Youtube to queue.
    * 1. Attempt to get playable link
@@ -300,10 +308,9 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
           return;
         }
 
-        await TrackPlayer.add(song);
-        await TrackPlayer.play();
-
         dispatch(addSongToLibrary(song));
+        //await TrackPlayer.add(song);
+        //await TrackPlayer.play();
       } catch (err) {
         console.error('useMediaPlayer-addTrack => ' + err);
         setError(err);
@@ -332,7 +339,7 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
   const createSong = async (track: Video) => {
     try {
       let url: string;
-      if (isTrack(track)) {
+      if (isTrackType(track)) {
         url = track.url.toString();
       } else {
         url = track.url?.toString() || '';
@@ -353,11 +360,22 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
       );
     } catch (err) {
       setError(err);
+      return new Song(
+        track.id,
+        track.title || '',
+        track.artist || '',
+        track?.avatar || '',
+        track.duration || 0,
+        '',
+      );
     }
   };
 
-  const isTrack = (t: Track | Video): t is Track => {
-    return (t as Track).type !== undefined;
+  const setShuffle = async () => {
+    try {
+    } catch (err) {
+      setError(err);
+    }
   };
 
   const setRepeatModeQueue = async () => {
@@ -414,10 +432,13 @@ const useMediaPlayer = (isMediaPlayerComponent = false) => {
     addTrack,
     removeTrack,
     isCurrentTrackPlaying,
+    setShuffle,
     setRepeatModeQueue,
     setRepeatModeOff,
     setCacheSize,
     setBuffer,
+    addLibrary,
+    createSong,
   };
 };
 
