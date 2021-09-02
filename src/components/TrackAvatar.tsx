@@ -21,15 +21,15 @@ const ContainerText = styled.View`
 
 interface Props {
   artwork: string;
-  duration: number | string;
-  durationStyle: StyleProp<TextStyle>;
+  duration?: number | string;
+  durationStyle?: StyleProp<TextStyle>;
 }
 
 const TrackAvatar: React.FC<Props> = ({ artwork, duration, durationStyle }) => {
   return (
     <ImageBackground source={{ uri: artwork }} style={styles.imageContainer}>
       <ContainerText>
-        <Text style={[styles.duration, durationStyle]}>{duration}</Text>
+        {duration && <Text style={[styles.duration, durationStyle]}>{duration}</Text>}
       </ContainerText>
     </ImageBackground>
   );
