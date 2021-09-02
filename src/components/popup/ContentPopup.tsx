@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import IconFontAwesome from '../IconFontAwesome';
+import { IconFontAwesome } from '../IconFontAwesome';
 import styled from 'styled-components/native';
 import { OptionsProps } from './types';
 

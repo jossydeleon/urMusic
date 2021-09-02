@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { ListItem } from 'react-native-elements';
+import { Video } from '../../hooks/util/react-usetube/types';
 import useHelpers from '../../hooks/util/useHelpers';
-import { SearchVideoResult } from '../../model';
 import { theme } from '../../theme/theme';
 import TrackAvatar from '../TrackAvatar';
 
 interface Props {
-  video: SearchVideoResult;
-  onPress: (video: SearchVideoResult) => void;
+  video: Video;
+  onPress: (video: Video) => void;
 }
 
 const SearchItem: React.FC<Props> = ({ video, onPress }) => {
@@ -27,7 +27,7 @@ const SearchItem: React.FC<Props> = ({ video, onPress }) => {
             : 'LIVE'
         }
         durationStyle={video.isLive && styles.liveTextStyle}
-        artwork={video.avatar}
+        artwork={video?.avatar || ''}
       />
 
       <ListItem.Content>
@@ -38,7 +38,7 @@ const SearchItem: React.FC<Props> = ({ video, onPress }) => {
           {transformTitle(video.artist, 25)}
         </ListItem.Subtitle>
         <ListItem.Subtitle style={styles.date}>
-          {formatDateToTimeAgo(video.publishedAt)}
+          {formatDateToTimeAgo(video?.publishedAt)}
         </ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.Chevron />

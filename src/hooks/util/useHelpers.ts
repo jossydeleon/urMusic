@@ -51,11 +51,14 @@ const useHelpers = () => {
   /**
    * Return date in format called timeago or relative time.
    * */
-  const formatDateToTimeAgo = (date: Date) => {
+  const formatDateToTimeAgo = (date: Date | string) => {
     if (!date) {
       return moment(new Date()).fromNow();
+    } else if (typeof date === 'string') {
+      return moment(new Date(date)).fromNow();
+    } else {
+      return moment(date).fromNow();
     }
-    return moment(date).fromNow();
   };
 
   return {

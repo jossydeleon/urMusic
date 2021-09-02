@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { theme } from '../../theme/theme';
-import IconFontAwesome from '../IconFontAwesome';
+import { IconFontAwesome } from '../IconFontAwesome';
 
 interface Props {
   item: string;
